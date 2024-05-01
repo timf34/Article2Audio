@@ -39,12 +39,8 @@ def get_substack_name(url: str) -> str:
 
 
 class BaseSubstackScraper(ABC):
-    def __init__(self, base_substack_url: str):
-        if not base_substack_url.endswith("/"):
-            base_substack_url += "/"
-        self.base_substack_url: str = base_substack_url
-
-        self.writer_name: str = get_substack_name(base_substack_url)
+    def __init__(self):
+        pass
 
     @staticmethod
     def html_to_text(html_content: str) -> str:
@@ -143,15 +139,20 @@ class BaseSubstackScraper(ABC):
         post_content = self.combine_metadata_and_content(title, author_name, subtitle, content)
         return post_content
 
+    def get_post_content(self, url: str) -> str:
+        soup = self.get_url_soup(url)
+        if soup is None:
+            # TODO: raise an error
+            return
+
+        post_content = self.extract_post_content(soup)
+        return post_content
+
     def save_post(self, url: str) -> None:
         """
         Saves the post to a file
         """
-        soup = self.get_url_soup(url)
-        if soup is None:
-            return
-
-        post_content = self.extract_post_content(soup)
+        post_content = self.get_post_content(url)
         filename = self.get_filename_from_url(url)
         self.save_to_file("output", post_content)
         print(f"Saved post: {filename}")
@@ -162,8 +163,8 @@ class BaseSubstackScraper(ABC):
 
 
 class SubstackScraper(BaseSubstackScraper):
-    def __init__(self, base_substack_url: str):
-        super().__init__(base_substack_url)
+    def __init__(self):
+        super().__init__()
 
     def get_url_soup(self, url: str) -> Optional[BeautifulSoup]:
         """
@@ -181,8 +182,8 @@ class SubstackScraper(BaseSubstackScraper):
 
 
 def main():
-    scraper = SubstackScraper(URL)
-    scraper.save_post(URL)
+    scraper = SubstackScraper()
+    print(scraper.get_post_content(URL))
 
 
 if __name__ == "__main__":
