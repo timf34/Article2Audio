@@ -106,7 +106,10 @@ class BaseSubstackScraper(ABC):
         if not isinstance(content, str):
             raise ValueError("content must be a string")
 
-        metadata = f"{title} by {author_name}\n\n"
+        metadata = f"{title}"
+
+        if author_name:
+            metadata += f" by {author_name}"
 
         metadata += "\n [pause] \n"
 
@@ -125,7 +128,7 @@ class BaseSubstackScraper(ABC):
         subtitle_element = soup.select_one("h3.subtitle")
         subtitle = subtitle_element.text.strip() if subtitle_element else ""
 
-        author_name = soup.select_one("div.profile-hover-card-target").text.strip()
+        author_name = soup.select_one("a._decoration-hover-underline_1k90y_298").text.strip()
 
         content_div = soup.select_one("div.available-content")
 
