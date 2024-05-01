@@ -15,6 +15,8 @@ Subtitle if there is one
 
 Content
 
+TODO: I might want to either remove the footnotes, or integrate them into the text for audio reading.
+
 """
 
 import os
