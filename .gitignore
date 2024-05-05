@@ -1,3 +1,4 @@
 config.py
 .gitignore
 .vercel
+/learning
