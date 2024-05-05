@@ -6,15 +6,18 @@ from openai import OpenAI
 from pydub import AudioSegment
 
 from config import OPENAI_KEY
-from readers import substack
-
+from readers import substack, articles
+from urllib.parse import urlparse
 
 
 app = Flask(__name__)
-
 client = OpenAI(api_key=OPENAI_KEY)
-
 DEVELOPMENT: bool = False
+
+
+def get_domain(url) -> str:
+    parsed_url = urlparse(url)
+    return parsed_url.netloc
 
 def split_text_into_chunks(text, max_length=4096):
     words = text.split()
@@ -44,6 +47,35 @@ def login():
             return "Invalid password"
     return render_template('login.html')
 
+
+def generate_audio(text):
+    chunks = split_text_into_chunks(text)
+    audio_segments = []
+    for chunk in chunks:
+        response = client.audio.speech.create(
+            model="tts-1",
+            voice="alloy",
+            input=chunk
+        )
+        audio_data = BytesIO(response.content)
+        audio_segments.append(AudioSegment.from_file(audio_data, format="mp3"))
+    return audio_segments
+
+
+def merge_audio_segments(audio_segments):
+    merged_audio = AudioSegment.empty()
+    for segment in audio_segments:
+        merged_audio += segment
+    return merged_audio
+
+
+def save_audio_to_temp_file(merged_audio):
+    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_file:
+        merged_audio.export(temp_file.name, format="mp3")
+        temp_file.seek(0)
+        return temp_file.name
+
+
 @app.route('/home', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
@@ -51,28 +83,17 @@ def home():
         if DEVELOPMENT:
             audio_data = "speech.mp3"
         else:
-            scraper = substack.SubstackScraper()
+            domain = get_domain(url)
+            if "substack.com" in domain:
+                scraper = substack.SubstackScraper()
+            else:
+                scraper = articles.ArticleReader()
+
             text = scraper.get_post_content(url)
-            chunks = split_text_into_chunks(text)
-
-            audio_segments = []
-            for chunk in chunks:
-                response = client.audio.speech.create(
-                    model="tts-1",
-                    voice="alloy",
-                    input=chunk
-                )
-                audio_data = BytesIO(response.content)
-                audio_segments.append(AudioSegment.from_file(audio_data, format="mp3"))
-
-            merged_audio = AudioSegment.empty()
-            for segment in audio_segments:
-                merged_audio += segment
-
-            with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_file:
-                merged_audio.export(temp_file.name, format="mp3")
-                temp_file.seek(0)
-                return send_file(temp_file.name, mimetype='audio/mpeg', as_attachment=True, download_name='audio.mp3')
+            audio_segments = generate_audio(text)
+            merged_audio = merge_audio_segments(audio_segments)
+            temp_file_path = save_audio_to_temp_file(merged_audio)
+            return send_file(temp_file_path, mimetype='audio/mpeg', as_attachment=True, download_name='audio.mp3')
 
     return render_template('home.html')
 

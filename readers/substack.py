@@ -21,7 +21,6 @@ TODO: I might want to either remove the footnotes, or integrate them into the te
 
 import os
 import re
-from abc import ABC, abstractmethod
 from typing import Optional
 
 from bs4 import BeautifulSoup
@@ -29,6 +28,8 @@ import html2text
 import requests
 from xml.etree import ElementTree as ET
 from urllib.parse import urlparse
+
+from readers.base_reader import BaseReader
 
 URL: str = "https://www.experimental-history.com/p/so-you-wanna-de-bog-yourself"
 
@@ -38,9 +39,9 @@ def get_substack_name(url: str) -> str:
     return parts[1] if parts[0] == 'www' else parts[0]  # Return the main part of the domain, while ignoring 'www' if
 
 
-class BaseSubstackScraper(ABC):
+class SubstackScraper(BaseReader):
     def __init__(self):
-        pass
+        super().__init__()
 
     @staticmethod
     def html_to_text(html_content: str) -> str:
@@ -55,29 +56,11 @@ class BaseSubstackScraper(ABC):
         h.body_width = 0
         h.ignore_tables = True
         # TODO: this converts it to markdown, but we need to remove the #'s and replace them with [pause]. Might be cleaner if there's a way to just convert to text while only keeping the main text content
-        content =  h.handle(html_content)
+        content = h.handle(html_content)
 
         content =  re.sub(r'^#+\s', '[pause]\n', content, flags=re.MULTILINE) # Remove the #'s, replacing them with single [pause]'s
         return re.sub(r'[_*]', '', content)  # Remove underscores and asterisks
 
-
-    @staticmethod
-    def save_to_file(filepath: str, content: str) -> None:
-        """
-        This method saves content to a file. Can be used to save HTML or Markdown
-        """
-        if not isinstance(filepath, str):
-            raise ValueError("filepath must be a string")
-
-        if not isinstance(content, str):
-            raise ValueError("content must be a string")
-
-        if os.path.exists(filepath):
-            print(f"File already exists: {filepath}")
-            return
-
-        with open(filepath, 'w', encoding='utf-8') as file:
-            file.write(content)
 
     @staticmethod
     def get_filename_from_url(url: str, filetype: str = ".md") -> str:
@@ -94,30 +77,6 @@ class BaseSubstackScraper(ABC):
             filetype = f".{filetype}"
 
         return url.split("/")[-1] + filetype
-
-    @staticmethod
-    def combine_metadata_and_content(title: str, author_name: str, subtitle: str, content: str) -> str:
-        """
-        Combines the title, subtitle, and content into a single string with Markdown format
-        """
-        if not isinstance(title, str):
-            raise ValueError("title must be a string")
-
-        if not isinstance(content, str):
-            raise ValueError("content must be a string")
-
-        metadata = f"{title}"
-
-        if author_name:
-            metadata += f" by {author_name}"
-
-        metadata += "\n [pause] \n"
-
-        if subtitle:
-            metadata += f"{subtitle}\n\n"
-            metadata += "\n [pause] \n"
-
-        return metadata + content
 
     def extract_post_content(self, soup: BeautifulSoup) -> str:
         """
@@ -160,16 +119,8 @@ class BaseSubstackScraper(ABC):
         self.save_to_file("output", post_content)
         print(f"Saved post: {filename}")
 
-    @abstractmethod
-    def get_url_soup(self, url: str) -> str:
-        raise NotImplementedError
-
-
-class SubstackScraper(BaseSubstackScraper):
-    def __init__(self):
-        super().__init__()
-
-    def get_url_soup(self, url: str) -> Optional[BeautifulSoup]:
+    @staticmethod
+    def get_url_soup(url: str) -> Optional[BeautifulSoup]:
         """
         Gets soup from URL using requests
         """
