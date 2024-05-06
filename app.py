@@ -54,7 +54,7 @@ def home():
             audio_segments = generate_audio(client, text)
             merged_audio = merge_audio_segments(audio_segments)
             temp_file_path = save_audio_to_temp_file(merged_audio)
-            return send_file(temp_file_path, mimetype='audio/mpeg', as_attachment=True, download_name='audio.mp3'), render_template('home.html', estimated_time=estimated_time)
+            return send_file(temp_file_path, mimetype='audio/mpeg', as_attachment=True, download_name='audio.mp3')
 
     # Initial GET request handling, show form without estimated time
     return render_template('home.html', estimated_time=None)
