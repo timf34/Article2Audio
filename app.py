@@ -21,8 +21,8 @@ client = OpenAI(api_key=OPENAI_KEY)
 audio_file_paths = {}
 
 
-def estimate_processing_time(text) -> float:
-    return len(text) * 0.011  # 0.011 seconds per character
+def estimate_processing_time(text) -> int:
+    return int(len(text) * 0.011) # 0.011 seconds per character
 
 
 def get_domain(url) -> str:
