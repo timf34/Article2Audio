@@ -9,5 +9,8 @@
         <input type="text" name="url" placeholder="Enter article URL" required>
         <input type="submit" value="Convert to Audio">
     </form>
+    {% if estimated_time %}
+        <p>Estimated processing time: {{ estimated_time }} seconds</p>
+    {% endif %}
 </body>
 </html>
