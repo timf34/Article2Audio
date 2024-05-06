@@ -1,10 +1,11 @@
 import logging
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify
 from flask_executor import Executor
 from urllib.parse import urlparse
 
-from config import OPENAI_KEY, LOGIN_PASSWORD, SECRET_KEY
-from audio import generate_audio, merge_audio_segments, save_audio_to_temp_file
+from config import OPENAI_KEY, LOGIN_PASSWORD, SECRET_KEY, AUDIO_FILE_NAME
+from audio import generate_audio, merge_audio_segments, save_audio_file
 from readers import substack, articles
 from openai import OpenAI
 
@@ -18,11 +19,12 @@ DEVELOPMENT = False
 client = OpenAI(api_key=OPENAI_KEY)
 
 # Global dictionary to store audio file paths
-audio_file_paths = {}
+audio_file_paths = {'audio_file_path': AUDIO_FILE_NAME}
+audio_file_info = {'last_modified': ""}
 
 
 def estimate_processing_time(text) -> int:
-    return int(len(text) * 0.011) # 0.011 seconds per character
+    return int(len(text) * 0.01) # 0.01 seconds per character
 
 
 def get_domain(url) -> str:
@@ -54,7 +56,13 @@ def home():
 def check_audio_ready():
     if "audio_file_path" in audio_file_paths:
         file_path = audio_file_paths["audio_file_path"]
-        return jsonify({'is_ready': True, 'file_path': url_for('download_audio', path=file_path)})
+        return jsonify(
+            {
+                'is_ready': True,
+                'file_path': url_for('download_audio', path=file_path),
+                'last_modified': audio_file_info['last_modified']
+            }
+        )
     return jsonify({'is_ready': False})
 
 
@@ -87,16 +95,15 @@ def process_article():
         return render_template('home.html', error=error_message, url=url)
 
 
-
 def stub_generate_audio(text):
     if DEVELOPMENT:
         temp_file_path = "speech.mp3"
     else:
         audio_segments = generate_audio(client, text)
         merged_audio = merge_audio_segments(audio_segments)
-        temp_file_path = save_audio_to_temp_file(merged_audio)
+        audio_file_info['last_modified'] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        save_audio_file(merged_audio)
 
-    audio_file_paths['audio_file_path'] = temp_file_path  # Save the path for download
 
 
 @app.route('/download_audio', methods=['GET'])

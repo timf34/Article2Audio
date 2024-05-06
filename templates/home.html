@@ -9,11 +9,12 @@
             fetch('{{ url_for("check_audio_ready") }}')
             .then(response => response.json())
             .then(data => {
+                var statusElement = document.getElementById('status');
                 if (data.is_ready) {
-                    document.getElementById('status').innerHTML = 'Your audio file is ready! <a href="' + data.file_path + '">Download here</a>';
+                    statusElement.innerHTML = 'Audio file last updated at ' + data.last_modified + ' is ready to download. <a href="' + data.file_path + '">Download here</a>';
                     clearInterval(intervalId);  // Stop the polling
                 } else {
-                    document.getElementById('status').innerText = 'Processing your audio file...';
+                    statusElement.innerText = 'Processing your audio file...';
                 }
             })
             .catch(error => console.error('Error:', error));

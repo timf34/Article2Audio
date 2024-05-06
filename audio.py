@@ -1,9 +1,12 @@
+import os
 import tempfile
 import time
 
 from io import BytesIO
 from pydub import AudioSegment
 from typing import List
+
+from config import AUDIO_FILE_NAME
 
 
 def split_text_into_chunks(text, max_length=4096) -> List[str]:
@@ -52,7 +55,11 @@ def save_audio_to_temp_file(merged_audio) -> str:
         return temp_file.name
 
 
-def time_audio_generation_per_character(client, text):
+def save_audio_file(merged_audio) -> None:
+    merged_audio.export(AUDIO_FILE_NAME, format="mp3")
+
+
+def time_audio_generation_per_character(client, text) -> float:
     start_time = time.time()
     audio_segments = generate_audio(client, text)
     merged_audio = merge_audio_segments(audio_segments)
