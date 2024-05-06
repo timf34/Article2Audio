@@ -1,27 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Article2Audio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <script>
+        function checkAudioStatus() {
+            fetch('{{ url_for("check_audio_ready") }}')
+            .then(response => response.json())
+            .then(data => {
+                if (data.is_ready) {
+                    document.getElementById('status').innerHTML = 'Your audio file is ready! <a href="' + data.file_path + '">Download here</a>';
+                    clearInterval(intervalId);  // Stop the polling
+                } else {
+                    document.getElementById('status').innerText = 'Processing your audio file...';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        var intervalId = setInterval(checkAudioStatus, 5000);  // Check every 5 seconds
+    </script>
 </head>
 <body>
-    <h1>Article2Audio</h1>
-    <form id="audioForm" method="POST">
+    <h1>Welcome</h1>
+    <form action="{{ url_for('process_article') }}" method="post">
         <input type="text" name="url" placeholder="Enter article URL" required>
-        <input type="submit" value="Convert to Audio">
+        <button type="submit">Convert Article to Audio</button>
     </form>
-
-    <div id="loadingMessage" style="display: none;">    <p>Processing your request. Please wait...</p></div>
-
     {% if estimated_time %}
-        <p>Estimated processing time: {{ estimated_time }}</p>
+        <p>Estimated Processing Time: {{ estimated_time }} seconds</p>
     {% endif %}
-
-<script>
-    document.getElementById('audioForm').addEventListener('submit', function() {
-        console.log("load message");
-        document.getElementById('loadingMessage').style.display = 'block';
-    });
-</script>
-
+    <p id="status"></p>
 </body>
 </html>
