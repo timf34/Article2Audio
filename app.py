@@ -11,7 +11,7 @@ from readers import substack, articles
 
 app = Flask(__name__)
 client = OpenAI(api_key=OPENAI_KEY)
-DEVELOPMENT: bool = False
+DEVELOPMENT: bool = True
 
 
 def estimate_processing_time(text) -> float:
@@ -35,36 +35,50 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/home', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET'])
 def home():
+    return render_template('home.html', estimated_time=None, file_path=None)
+
+
+@app.route('/process_audio', methods=['POST'])
+def process_audio():
     try:
-        if request.method == 'POST':
-            url = request.form['url']
-            domain = get_domain(url)
-            # Log the domain to see what is being captured
-            logging.info(f"Domain extracted: {domain}")
+        url = request.form['url']
+        domain = get_domain(url)
+        logging.info(f"Domain extracted: {domain}")
 
-            if "substack.com" in domain:
-                scraper = substack.SubstackScraper()
-            else:
-                scraper = articles.ArticleReader()
+        if "substack.com" in domain:
+            scraper = substack.SubstackScraper()
+        else:
+            scraper = articles.ArticleReader()
 
-            text = scraper.get_post_content(url)
-            estimated_time = estimate_processing_time(text)
-            # audio_segments = generate_audio(client, text)
-            # merged_audio = merge_audio_segments(audio_segments)
-            # temp_file_path = save_audio_to_temp_file(merged_audio)
+        text = scraper.get_post_content(url)
+        estimated_time = estimate_processing_time(text)
+
+        if DEVELOPMENT is True:
             temp_file_path = "speech.mp3"
-            logging.info(f"Processing time: {estimated_time}, File: {temp_file_path}")
+        else:
+            audio_segments = generate_audio(client, text)
+            merged_audio = merge_audio_segments(audio_segments)
+            temp_file_path = save_audio_to_temp_file(merged_audio)
 
-            return send_file(temp_file_path, mimetype='audio/mpeg', as_attachment=True, download_name='audio.mp3')
+        logging.info(f"Processing time: {estimated_time}, File: {temp_file_path}")
 
-        return render_template('home.html', estimated_time=None)
+        return render_template('home.html', estimated_time=estimated_time, file_path=temp_file_path)
 
     except Exception as e:
-        logging.error(f"Error during POST to /home: {e}")
+        logging.error(f"Error during POST to /process_audio: {e}")
         return str(e), 500  # Return the error and a server error status
+
+
+@app.route('/download_audio')
+def download_audio():
+    if file_path := request.args.get('file_path'):
+        return send_file(file_path, mimetype='audio/mpeg', as_attachment=True, download_name='audio.mp3')
+    else:
+        return "No audio file found.", 404
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
