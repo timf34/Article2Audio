@@ -4,7 +4,7 @@ from openai import OpenAI
 from urllib.parse import urlparse
 
 from audio import *
-from config import OPENAI_KEY
+from config import OPENAI_KEY, LOGIN_PASSWORD
 from readers import substack, articles
 
 
@@ -27,7 +27,7 @@ def get_domain(url) -> str:
 def login():
     if request.method == 'POST':
         password = request.form['password']
-        if password == 'password':
+        if password == LOGIN_PASSWORD:
             return redirect(url_for('home'))
         else:
             return "Invalid password"
