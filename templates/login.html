@@ -8,6 +8,10 @@
     <form method="POST">
         <input type="password" name="password" placeholder="Password" required>
         <input type="submit" value="Login">
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
     </form>
+
 </body>
 </html>

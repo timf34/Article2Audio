@@ -1,10 +1,10 @@
 import logging
-from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify, copy_current_request_context
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify
 from flask_executor import Executor
 from urllib.parse import urlparse
 
 from config import OPENAI_KEY, LOGIN_PASSWORD, SECRET_KEY
-from audio import generate_audio, merge_audio_segments, save_audio_to_temp_file, time_audio_generation_per_character
+from audio import generate_audio, merge_audio_segments, save_audio_to_temp_file
 from readers import substack, articles
 from openai import OpenAI
 
@@ -32,14 +32,15 @@ def get_domain(url) -> str:
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    error=None
     if request.method == 'POST':
         password = request.form['password']
         if password == LOGIN_PASSWORD:
             session['logged_in'] = True
             return redirect(url_for('home'))
         else:
-            return "Invalid password"
-    return render_template('login.html')
+            error = "Invalid password"
+    return render_template('login.html', error=error)
 
 
 @app.route('/home', methods=['GET'])
@@ -65,18 +66,26 @@ def process_article():
     domain = get_domain(url)
     logging.info(f"Domain extracted: {domain}")
 
-    if "substack.com" in domain:
-        scraper = substack.SubstackScraper()
-    else:
-        scraper = articles.ArticleReader()
+    try:
+        if "substack.com" in domain:
+            scraper = substack.SubstackScraper()
+        else:
+            scraper = articles.ArticleReader()
 
-    text = scraper.get_post_content(url)
-    estimated_time = estimate_processing_time(text)
+        text = scraper.get_post_content(url)
+        if not text:
+            raise ValueError("No content found at the provided URL.")
 
-    # Start the audio generation in the background
-    executor.submit(stub_generate_audio, text)
+        estimated_time = estimate_processing_time(text)
 
-    return render_template('home.html', estimated_time=estimated_time)
+        # Start the audio generation in the background
+        executor.submit(stub_generate_audio, text)
+
+        return render_template('home.html', estimated_time=estimated_time)
+    except Exception as e:
+        error_message = str(e) or "Failed to process the URL. Please check the URL and try again."
+        return render_template('home.html', error=error_message, url=url)
+
 
 
 def stub_generate_audio(text):

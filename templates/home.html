@@ -31,6 +31,9 @@
     {% if estimated_time %}
         <p>Estimated Processing Time: {{ estimated_time }} seconds</p>
     {% endif %}
+    {% if error %}
+        <p style="color: red;">Error: {{ error }}</p>
+    {% endif %}
     <p id="status"></p>
 </body>
 </html>
