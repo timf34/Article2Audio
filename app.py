@@ -9,7 +9,7 @@ from readers import substack, articles
 
 app = Flask(__name__)
 client = OpenAI(api_key=OPENAI_KEY)
-DEVELOPMENT: bool = True
+DEVELOPMENT: bool = False
 
 
 def estimate_processing_time(text) -> float:
@@ -50,10 +50,11 @@ def home():
 
             text = scraper.get_post_content(url)
             estimated_time = estimate_processing_time(text)
-            audio_segments = generate_audio(client, text)
-            merged_audio = merge_audio_segments(audio_segments)
-            temp_file_path = save_audio_to_temp_file(merged_audio)
-            return send_file(temp_file_path, mimetype='audio/mpeg', as_attachment=True, download_name='audio.mp3')
+            # audio_segments = generate_audio(client, text)
+            # merged_audio = merge_audio_segments(audio_segments)
+            # temp_file_path = save_audio_to_temp_file(merged_audio)
+            temp_file_path = "speech.mp3"
+            return send_file(temp_file_path, mimetype='audio/mpeg', as_attachment=True, download_name='audio.mp3'), render_template('home.html', estimated_time=estimated_time)
 
     # Initial GET request handling, show form without estimated time
     return render_template('home.html', estimated_time=None)
