@@ -1,4 +1,5 @@
 import tempfile
+import time
 
 from io import BytesIO
 from pydub import AudioSegment
@@ -49,3 +50,18 @@ def save_audio_to_temp_file(merged_audio) -> str:
         merged_audio.export(temp_file.name, format="mp3")
         temp_file.seek(0)
         return temp_file.name
+
+
+def time_audio_generation_per_character(client, text):
+    start_time = time.time()
+    audio_segments = generate_audio(client, text)
+    merged_audio = merge_audio_segments(audio_segments)
+    end_time = time.time()
+
+    generation_time = end_time - start_time
+    average_time_per_character = generation_time / len(text)
+
+    print(f"Total generation time: {generation_time:.2f} seconds")
+    print(f"Average time per character: {average_time_per_character:.4f} seconds")
+
+    return average_time_per_character
