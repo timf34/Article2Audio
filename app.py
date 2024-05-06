@@ -4,7 +4,7 @@ from flask_executor import Executor
 from urllib.parse import urlparse
 
 from config import OPENAI_KEY, LOGIN_PASSWORD
-from audio import generate_audio, merge_audio_segments, save_audio_to_temp_file
+from audio import generate_audio, merge_audio_segments, save_audio_to_temp_file, time_audio_generation_per_character
 from readers import substack, articles
 from openai import OpenAI
 
@@ -13,7 +13,7 @@ app.secret_key = "super secret key"
 app.config['EXECUTOR_TYPE'] = 'thread'
 executor = Executor(app)
 
-DEVELOPMENT = True
+DEVELOPMENT = False
 
 client = OpenAI(api_key=OPENAI_KEY)
 
@@ -22,7 +22,7 @@ audio_file_paths = {}
 
 
 def estimate_processing_time(text) -> float:
-    return len(text) * 0.05
+    return len(text) * 0.011  # 0.011 seconds per character
 
 
 def get_domain(url) -> str:
