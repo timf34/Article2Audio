@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from openai import OpenAI
 from urllib.parse import urlparse
@@ -10,7 +9,7 @@ from readers import substack, articles
 
 app = Flask(__name__)
 client = OpenAI(api_key=OPENAI_KEY)
-DEVELOPMENT: bool = False
+DEVELOPMENT: bool = True
 
 
 def estimate_processing_time(text) -> float:
@@ -58,8 +57,6 @@ def home():
 
     # Initial GET request handling, show form without estimated time
     return render_template('home.html', estimated_time=None)
-
-
 
 
 if __name__ == '__main__':

@@ -18,15 +18,12 @@ Content
 TODO: I might want to either remove the footnotes, or integrate them into the text for audio reading.
 
 """
-
-import os
 import re
 from typing import Optional
 
 from bs4 import BeautifulSoup
 import html2text
 import requests
-from xml.etree import ElementTree as ET
 from urllib.parse import urlparse
 
 from readers.base_reader import BaseReader
