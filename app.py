@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify
 from flask_executor import Executor
@@ -103,6 +104,10 @@ def stub_generate_audio(text):
         merged_audio = merge_audio_segments(audio_segments)
         audio_file_info['last_modified'] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
         save_audio_file(merged_audio)
+
+        # Get current working directory
+        pwd = os.getcwd()
+        logging.info(f"Audio file saved in {pwd} as {AUDIO_FILE_NAME}")
 
 
 
