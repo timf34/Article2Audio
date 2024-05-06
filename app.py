@@ -10,7 +10,7 @@ from readers import substack, articles
 
 app = Flask(__name__)
 client = OpenAI(api_key=OPENAI_KEY)
-DEVELOPMENT: bool = True
+DEVELOPMENT: bool = False
 
 
 def estimate_processing_time(text) -> float:
