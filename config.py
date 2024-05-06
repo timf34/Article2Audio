@@ -9,4 +9,5 @@ load_dotenv()
 
 OPENAI_KEY = os.getenv('OPENAI_KEY')
 LOGIN_PASSWORD = os.getenv('LOGIN_PASSWORD')
+SECRET_KEY = os.getenv('SECRET_KEY')
 

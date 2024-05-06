@@ -3,13 +3,13 @@ from flask import Flask, render_template, request, redirect, url_for, session, s
 from flask_executor import Executor
 from urllib.parse import urlparse
 
-from config import OPENAI_KEY, LOGIN_PASSWORD
+from config import OPENAI_KEY, LOGIN_PASSWORD, SECRET_KEY
 from audio import generate_audio, merge_audio_segments, save_audio_to_temp_file, time_audio_generation_per_character
 from readers import substack, articles
 from openai import OpenAI
 
 app = Flask(__name__)
-app.secret_key = "super secret key"
+app.secret_key = SECRET_KEY
 app.config['EXECUTOR_TYPE'] = 'thread'
 executor = Executor(app)
 
@@ -35,6 +35,7 @@ def login():
     if request.method == 'POST':
         password = request.form['password']
         if password == LOGIN_PASSWORD:
+            session['logged_in'] = True
             return redirect(url_for('home'))
         else:
             return "Invalid password"
@@ -43,6 +44,8 @@ def login():
 
 @app.route('/home', methods=['GET'])
 def home():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     return render_template('home.html', estimated_time=None)
 
 
@@ -56,6 +59,8 @@ def check_audio_ready():
 
 @app.route('/process_article', methods=['POST'])
 def process_article():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     url = request.form['url']
     domain = get_domain(url)
     logging.info(f"Domain extracted: {domain}")
