@@ -1,3 +1,5 @@
+import logging
+
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from openai import OpenAI
 from urllib.parse import urlparse
@@ -35,14 +37,13 @@ def login():
 
 @app.route('/home', methods=['GET', 'POST'])
 def home():
-    if request.method == 'POST':
-        url = request.form['url']
-        if DEVELOPMENT:
-            audio_data = "speech.mp3"
-            estimated_time = "1 minute 30 seconds"
-            return render_template('home.html', estimated_time=estimated_time)
-        else:
+    try:
+        if request.method == 'POST':
+            url = request.form['url']
             domain = get_domain(url)
+            # Log the domain to see what is being captured
+            logging.info(f"Domain extracted: {domain}")
+
             if "substack.com" in domain:
                 scraper = substack.SubstackScraper()
             else:
@@ -54,10 +55,15 @@ def home():
             # merged_audio = merge_audio_segments(audio_segments)
             # temp_file_path = save_audio_to_temp_file(merged_audio)
             temp_file_path = "speech.mp3"
-            return send_file(temp_file_path, mimetype='audio/mpeg', as_attachment=True, download_name='audio.mp3'), render_template('home.html', estimated_time=estimated_time)
+            logging.info(f"Processing time: {estimated_time}, File: {temp_file_path}")
 
-    # Initial GET request handling, show form without estimated time
-    return render_template('home.html', estimated_time=None)
+            return send_file(temp_file_path, mimetype='audio/mpeg', as_attachment=True, download_name='audio.mp3')
+
+        return render_template('home.html', estimated_time=None)
+
+    except Exception as e:
+        logging.error(f"Error during POST to /home: {e}")
+        return str(e), 500  # Return the error and a server error status
 
 
 if __name__ == '__main__':
