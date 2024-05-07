@@ -46,6 +46,8 @@ def merge_audio_segments(audio_segments) -> AudioSegment:
     merged_audio = AudioSegment.empty()
     for segment in audio_segments:
         merged_audio += segment
+
+    print("Finished merging audio segments
     return merged_audio
 
 
