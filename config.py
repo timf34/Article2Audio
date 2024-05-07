@@ -10,5 +10,5 @@ load_dotenv()
 OPENAI_KEY = os.getenv('OPENAI_KEY')
 LOGIN_PASSWORD = os.getenv('LOGIN_PASSWORD')
 SECRET_KEY = os.getenv('SECRET_KEY')
-AUDIO_FILE_NAME = "audio.mp3"
+AUDIO_FILE_NAME = "tmp/audio.mp3"
 
