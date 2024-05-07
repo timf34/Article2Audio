@@ -48,6 +48,7 @@ def login():
 
 @app.route('/home', methods=['GET'])
 def home():
+    print("we are live")
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     return render_template('home.html', estimated_time=None)
@@ -86,6 +87,8 @@ def process_article():
             raise ValueError("No content found at the provided URL.")
 
         estimated_time = estimate_processing_time(text)
+
+        print("we in here")
 
         # Start the audio generation in the background
         executor.submit(stub_generate_audio, text)
