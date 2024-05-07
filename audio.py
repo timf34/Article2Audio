@@ -35,13 +35,14 @@ def generate_audio(client, text) -> List[AudioSegment]:
     audio_segments = []
     for chunk in chunks:
         print("before client.audio.speech.create")
-        response = client.audio.speech.create(
-            model="tts-1",
-            voice="alloy",
-            input=chunk
-        )
-        audio_data = BytesIO(response.content)
-        audio_segments.append(AudioSegment.from_file(audio_data, format="mp3"))
+        time.sleep(10)
+        # response = client.audio.speech.create(
+        #     model="tts-1",
+        #     voice="alloy",
+        #     input=chunk
+        # )
+        # audio_data = BytesIO(response.content)
+        # audio_segments.append(AudioSegment.from_file(audio_data, format="mp3"))
     print("finished generating audio segments")
     return audio_segments
 
