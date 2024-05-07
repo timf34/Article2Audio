@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, s
 from flask_executor import Executor
 from urllib.parse import urlparse
 
-from config import OPENAI_KEY, LOGIN_PASSWORD, SECRET_KEY, AUDIO_FILE_NAME
+from config import OPENAI_KEY, LOGIN_PASSWORD, SECRET_KEY, AUDIO_FILE_NAME, LAST_MODIFIED_FILE_NAME
 from audio import generate_audio, merge_audio_segments, save_audio_file
 from readers import substack, articles
 from openai import OpenAI
@@ -18,10 +18,6 @@ executor = Executor(app)
 DEVELOPMENT = False
 
 client = OpenAI(api_key=OPENAI_KEY)
-
-# Global dictionary to store audio file paths
-audio_file_paths = {'audio_file_path': AUDIO_FILE_NAME}
-audio_file_info = {'last_modified': ""}
 
 
 def estimate_processing_time(text) -> int:
@@ -56,13 +52,17 @@ def home():
 
 @app.route('/check_audio_ready', methods=['GET'])
 def check_audio_ready():
-    if "audio_file_path" in audio_file_paths:
-        file_path = audio_file_paths["audio_file_path"]
+    # Check if AUDIO_FILE_NAME file exists
+    if os.path.exists(AUDIO_FILE_NAME) and os.path.exists(LAST_MODIFIED_FILE_NAME):
+
+        with open(LAST_MODIFIED_FILE_NAME, 'r') as file:
+            last_modified = file.read()
+
         return jsonify(
             {
                 'is_ready': True,
-                'file_path': url_for('download_audio', path=file_path),
-                'last_modified': audio_file_info['last_modified']
+                'file_path': url_for('download_audio', path=AUDIO_FILE_NAME),
+                'last_modified': last_modified
             }
         )
     return jsonify({'is_ready': False})
@@ -105,7 +105,8 @@ def stub_generate_audio(text):
     else:
         audio_segments = generate_audio(client, text)
         merged_audio = merge_audio_segments(audio_segments)
-        audio_file_info['last_modified'] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        with open(LAST_MODIFIED_FILE_NAME, 'w') as file:
+            file.write(datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
         save_audio_file(merged_audio)
 
         # Get current working directory
@@ -117,7 +118,7 @@ def stub_generate_audio(text):
 
 @app.route('/download_audio', methods=['GET'])
 def download_audio():
-    if file_path := audio_file_paths.get('audio_file_path'):
+    if file_path := AUDIO_FILE_NAME:
         return send_file(file_path, mimetype='audio/mpeg', as_attachment=True, download_name='audio.mp3')
     return "No audio file found.", 404
 

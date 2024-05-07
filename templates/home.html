@@ -10,13 +10,13 @@
             .then(response => response.json())
             .then(data => {
                 var statusElement = document.getElementById('status');
-                var estimatedTimeElement = document.getElementById('estimated-time');
+                // var estimatedTimeElement = document.getElementById('estimated-time');
                 if (data.is_ready) {
                     statusElement.innerHTML = 'Audio file last updated at ' + data.last_modified + ' is ready to download. <a href="' + data.file_path + '">Download here</a>';
                     clearInterval(intervalId);  // Stop the polling
-                    if (estimatedTimeElement) {
-                        estimatedTimeElement.style.display = 'none';
-                    }
+                    // if (estimatedTimeElement) {
+                    //     estimatedTimeElement.style.display = 'none';
+                    // }
                 } else {
                     statusElement.innerText = 'Processing your audio file...';
                 }

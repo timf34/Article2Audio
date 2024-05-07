@@ -11,4 +11,5 @@ OPENAI_KEY = os.getenv('OPENAI_KEY')
 LOGIN_PASSWORD = os.getenv('LOGIN_PASSWORD')
 SECRET_KEY = os.getenv('SECRET_KEY')
 AUDIO_FILE_NAME = "tmp/audio.mp3"
+LAST_MODIFIED_FILE_NAME = "tmp/last_modified.txt"
 
