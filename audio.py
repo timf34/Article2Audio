@@ -29,9 +29,12 @@ def split_text_into_chunks(text, max_length=4096) -> List[str]:
 
 
 def generate_audio(client, text) -> List[AudioSegment]:
+    print("before split_text_into_chunks")
     chunks = split_text_into_chunks(text)
+    print("after split_text_into_chunks")
     audio_segments = []
     for chunk in chunks:
+        print("before client.audio.speech.create")
         response = client.audio.speech.create(
             model="tts-1",
             voice="alloy",
@@ -39,6 +42,7 @@ def generate_audio(client, text) -> List[AudioSegment]:
         )
         audio_data = BytesIO(response.content)
         audio_segments.append(AudioSegment.from_file(audio_data, format="mp3"))
+    print("finished generating audio segments")
     return audio_segments
 
 
