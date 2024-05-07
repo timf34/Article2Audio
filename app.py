@@ -107,11 +107,16 @@ def stub_generate_audio(text):
     if DEVELOPMENT:
         temp_file_path = "speech.mp3"
     else:
+        print("before generate audio")
         audio_segments = generate_audio(client, text)
+        print("after generate audio")
         merged_audio = merge_audio_segments(audio_segments)
+        print("after merge audio")
         with open(LAST_MODIFIED_FILE_NAME, 'w') as file:
             file.write(datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
+        print("after write last modified")
         save_audio_file(merged_audio)
+        print("after save audio file")
 
         # Get current working directory
         pwd = os.getcwd()
