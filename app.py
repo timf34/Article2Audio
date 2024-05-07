@@ -91,7 +91,9 @@ def process_article():
         print("we in here")
 
         # Start the audio generation in the background
-        executor.submit(stub_generate_audio, text)
+        # executor.submit(stub_generate_audio, text)
+
+        stub_generate_audio(text)
 
         print("after executor submit")
 
