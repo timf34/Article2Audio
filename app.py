@@ -93,6 +93,8 @@ def process_article():
         # Start the audio generation in the background
         executor.submit(stub_generate_audio, text)
 
+        print("after executor submit")
+
         return render_template('home.html', estimated_time=estimated_time)
     except Exception as e:
         error_message = str(e) or "Failed to process the URL. Please check the URL and try again."
@@ -100,6 +102,8 @@ def process_article():
 
 
 def stub_generate_audio(text):
+    print("in stub_generate_audio")
+
     if DEVELOPMENT:
         temp_file_path = "speech.mp3"
     else:
@@ -113,7 +117,6 @@ def stub_generate_audio(text):
         pwd = os.getcwd()
         print(f"Audio file saved in {pwd} as {AUDIO_FILE_NAME}")
         logging.info(f"Audio file saved in {pwd} as {AUDIO_FILE_NAME}")
-
 
 
 @app.route('/download_audio', methods=['GET'])
