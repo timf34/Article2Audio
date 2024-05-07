@@ -1,3 +1,4 @@
+import logging
 import os
 import tempfile
 import time
@@ -48,15 +49,19 @@ def merge_audio_segments(audio_segments) -> AudioSegment:
     return merged_audio
 
 
-def save_audio_to_temp_file(merged_audio) -> str:
+def save_audio_to_temp_file(merged_audio: AudioSegment) -> str:
     with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_file:
         merged_audio.export(temp_file.name, format="mp3")
         temp_file.seek(0)
         return temp_file.name
 
 
-def save_audio_file(merged_audio) -> None:
+def save_audio_file(merged_audio: AudioSegment) -> None:
     merged_audio.export(AUDIO_FILE_NAME, format="mp3")
+    print(f"Audio file saved as {AUDIO_FILE_NAME}")
+    # Check if it was saved successfully
+    if not os.path.exists(AUDIO_FILE_NAME):
+        raise ValueError("Failed to save the audio file.")
 
 
 def time_audio_generation_per_character(client, text) -> float:

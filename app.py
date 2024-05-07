@@ -107,6 +107,7 @@ def stub_generate_audio(text):
 
         # Get current working directory
         pwd = os.getcwd()
+        print(f"Audio file saved in {pwd} as {AUDIO_FILE_NAME}")
         logging.info(f"Audio file saved in {pwd} as {AUDIO_FILE_NAME}")
 
 
