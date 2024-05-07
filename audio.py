@@ -57,6 +57,7 @@ def save_audio_to_temp_file(merged_audio: AudioSegment) -> str:
 
 
 def save_audio_file(merged_audio: AudioSegment) -> None:
+    print("About to save the audio file")
     merged_audio.export(AUDIO_FILE_NAME, format="mp3")
     print(f"Audio file saved as {AUDIO_FILE_NAME}")
     # Check if it was saved successfully
