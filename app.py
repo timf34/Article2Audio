@@ -50,24 +50,6 @@ def home():
     return render_template('home.html', estimated_time=None)
 
 
-@app.route('/check_audio_ready', methods=['GET'])
-def check_audio_ready():
-    # Check if AUDIO_FILE_NAME file exists
-    if os.path.exists(AUDIO_FILE_NAME) and os.path.exists(LAST_MODIFIED_FILE_NAME):
-
-        with open(LAST_MODIFIED_FILE_NAME, 'r') as file:
-            last_modified = file.read()
-
-        return jsonify(
-            {
-                'is_ready': True,
-                'file_path': url_for('download_audio', path=AUDIO_FILE_NAME),
-                'last_modified': last_modified
-            }
-        )
-    return jsonify({'is_ready': False})
-
-
 @app.route('/process_article', methods=['POST'])
 def process_article():
     if not session.get('logged_in'):

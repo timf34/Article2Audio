@@ -4,28 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Article2Audio</title>
-<!--    <script>-->
-<!--        function checkAudioStatus() {-->
-<!--            fetch('{{ url_for("check_audio_ready") }}')-->
-<!--            .then(response => response.json())-->
-<!--            .then(data => {-->
-<!--                var statusElement = document.getElementById('status');-->
-<!--                // var estimatedTimeElement = document.getElementById('estimated-time');-->
-<!--                if (data.is_ready) {-->
-<!--                    statusElement.innerHTML = 'Audio file last updated at ' + data.last_modified + ' is ready to download. <a href="' + data.file_path + '">Download here</a>';-->
-<!--                    clearInterval(intervalId);  // Stop the polling-->
-<!--                    // if (estimatedTimeElement) {-->
-<!--                    //     estimatedTimeElement.style.display = 'none';-->
-<!--                    // }-->
-<!--                } else {-->
-<!--                    statusElement.innerText = 'Processing your audio file...';-->
-<!--                }-->
-<!--            })-->
-<!--            .catch(error => console.error('Error:', error));-->
-<!--        }-->
-
-<!--        var intervalId = setInterval(checkAudioStatus, 5000);  // Check every 5 seconds-->
-<!--    </script>-->
 </head>
 <body>
     <h1>Article2Audio</h1>
