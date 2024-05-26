@@ -1,10 +1,10 @@
 import logging
 import os
 from datetime import datetime
+from time import sleep
+from threading import Thread
 from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify
-from flask_executor import Executor
 from urllib.parse import urlparse
-
 from config import OPENAI_KEY, LOGIN_PASSWORD, SECRET_KEY, AUDIO_FILE_NAME, LAST_MODIFIED_FILE_NAME
 from audio import generate_audio, merge_audio_segments, save_audio_file
 from readers import substack, articles
@@ -12,22 +12,17 @@ from openai import OpenAI
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
-app.config['EXECUTOR_TYPE'] = 'thread'
-executor = Executor(app)
 
 DEVELOPMENT = False
 
 client = OpenAI(api_key=OPENAI_KEY)
 
-
 def estimate_processing_time(text) -> int:
     return int(len(text) * 0.01) # 0.01 seconds per character
-
 
 def get_domain(url) -> str:
     parsed_url = urlparse(url)
     return parsed_url.netloc
-
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -41,14 +36,12 @@ def login():
             error = "Invalid password"
     return render_template('login.html', error=error)
 
-
 @app.route('/home', methods=['GET'])
 def home():
     print("we are live")
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     return render_template('home.html', estimated_time=None)
-
 
 @app.route('/process_article', methods=['POST'])
 def process_article():
@@ -73,20 +66,18 @@ def process_article():
         print("we in here")
 
         # Start the audio generation in the background
-        # executor.submit(stub_generate_audio, text)
+        thread = Thread(target=generate_audio_task, args=(text,))
+        thread.start()
 
-        stub_generate_audio(text)
-
-        print("after executor submit")
+        print("after starting thread")
 
         return render_template('home.html', estimated_time=estimated_time)
     except Exception as e:
         error_message = str(e) or "Failed to process the URL. Please check the URL and try again."
         return render_template('home.html', error=error_message, url=url)
 
-
-def stub_generate_audio(text):
-    print("in stub_generate_audio")
+def generate_audio_task(text):
+    print("in generate_audio_task")
 
     if DEVELOPMENT:
         temp_file_path = "speech.mp3"
@@ -107,12 +98,24 @@ def stub_generate_audio(text):
         print(f"Audio file saved in {pwd} as {AUDIO_FILE_NAME}")
         logging.info(f"Audio file saved in {pwd} as {AUDIO_FILE_NAME}")
 
+def simple_task(duration):
+    sleep(duration)
+    print(f"Task completed after {duration} seconds")
+    return f"Task completed after {duration} seconds"
 
-@app.route('/download_audio', methods=['GET'])
-def download_audio():
-    if file_path := AUDIO_FILE_NAME:
-        return send_file(file_path, mimetype='audio/mpeg', as_attachment=True, download_name='audio.mp3')
-    return "No audio file found.", 404
+@app.route('/run_simple_task', methods=['POST'])
+def run_simple_task():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    duration = int(request.form['duration'])
+    thread = Thread(target=simple_task, args=(duration,))
+    thread.start()
+    return jsonify({'status': 'Task started'}), 202
+
+@app.route('/task_status/<task_id>')
+def task_status(task_id):
+    # Dummy endpoint for consistency
+    return jsonify({'status': 'Use logs to track task completion'})
 
 
 if __name__ == '__main__':
