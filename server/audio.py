@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import os
 import tempfile
@@ -7,7 +8,30 @@ from io import BytesIO
 from pydub import AudioSegment
 from typing import List
 
-from config import AUDIO_FILE_NAME
+from config import AUDIO_FILE_NAME, DEVELOPMENT, LAST_MODIFIED_FILE_NAME
+
+# Temp
+def generate_audio_task(text, client):
+    print("in generate_audio_task")
+
+    if DEVELOPMENT:
+        temp_file_path = "../speech.mp3"
+    else:
+        print("before generate audio")
+        audio_segments = generate_audio(client, text)
+        print("after generate audio")
+        merged_audio = merge_audio_segments(audio_segments)
+        print("after merge audio")
+        with open(LAST_MODIFIED_FILE_NAME, 'w') as file:
+            file.write(datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
+        print("after write last modified")
+        save_audio_file(merged_audio)
+        print("after save audio file")
+
+        # Get current working directory
+        pwd = os.getcwd()
+        print(f"Audio file saved in {pwd} as {AUDIO_FILE_NAME}")
+        logging.info(f"Audio file saved in {pwd} as {AUDIO_FILE_NAME}")
 
 
 def split_text_into_chunks(text, max_length=4096) -> List[str]:

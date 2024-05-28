@@ -1,6 +1,6 @@
 import newspaper
 
-from server.readers.base_reader import BaseReader
+from readers.base_reader import BaseReader
 
 
 class ArticleReader(BaseReader):
