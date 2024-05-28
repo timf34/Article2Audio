@@ -26,7 +26,7 @@ import html2text
 import requests
 from urllib.parse import urlparse
 
-from readers.base_reader import BaseReader
+from server.readers.base_reader import BaseReader
 
 URL: str = "https://www.experimental-history.com/p/so-you-wanna-de-bog-yourself"
 

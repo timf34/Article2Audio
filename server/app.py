@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 from time import sleep
 from threading import Thread
-from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from urllib.parse import urlparse
 from config import OPENAI_KEY, LOGIN_PASSWORD, SECRET_KEY, AUDIO_FILE_NAME, LAST_MODIFIED_FILE_NAME
 from audio import generate_audio, merge_audio_segments, save_audio_file
@@ -80,7 +80,7 @@ def generate_audio_task(text):
     print("in generate_audio_task")
 
     if DEVELOPMENT:
-        temp_file_path = "speech.mp3"
+        temp_file_path = "../speech.mp3"
     else:
         print("before generate audio")
         audio_segments = generate_audio(client, text)
