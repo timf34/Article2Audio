@@ -1,4 +1,5 @@
 import logging
+import time
 import uuid
 from fastapi import FastAPI, BackgroundTasks, HTTPException
 from fastapi.responses import FileResponse
@@ -14,21 +15,14 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 tasks = {}
 
 
-@app.get("/api/get_task_id", response_model=URLResponse)
-async def get_task_id():
-    print("hello world task id")
-    task_id = str(uuid.uuid4())
-    tasks[task_id] = {'status': 'processing'}
-    return URLResponse(hello="world")
-
-
 @app.post("/api/process_article", response_model=URLResponse)
-async def process_article(request: URLRequest):
+async def process_article(request: URLRequest, background_tasks: BackgroundTasks):
     url = request.url
     domain = get_domain(url)
     logging.info(f"Domain extracted: {domain}")
 
     print("we in here")
+
 
     try:
         if "substack.com" in domain:
@@ -36,15 +30,18 @@ async def process_article(request: URLRequest):
         else:
             scraper = articles.ArticleReader()
 
+        task_id = str(uuid.uuid4())
+
+        tasks[task_id] = {'status': 'scraping_url'}
+
         text = scraper.get_post_content(url)
         if not text:
             raise ValueError("No content found at the provided URL.")
 
         estimated_time = estimate_processing_time(text)
 
-        task_id = str(uuid.uuid4())
-        tasks[task_id] = {'status': 'processing'}
-        # background_tasks.add_task(generate_audio_task, text, task_id)
+        tasks[task_id] = {'status': 'creating_audio_file'}
+        background_tasks.add_task(generate_audio_task, text, tasks, task_id)
 
         print(task_id)
         return URLResponse(estimated_time=estimated_time, task_id=task_id)
@@ -55,10 +52,14 @@ async def process_article(request: URLRequest):
 
 @app.get("/api/status/{task_id}", response_model=StatusResponse)
 async def get_status(task_id: str):
+    print(f"Tasks: {tasks}")
+    print(f"Checking status for task_id: {task_id}")
     task = tasks.get(task_id)
     if not task:
+        print(f"Task not found for task_id: {task_id}")
         raise HTTPException(status_code=404, detail="Task not found")
-    return task
+    print(f"Task found: {task}")
+    return StatusResponse(**task)
 
 
 @app.get("/api/download/{task_id}")
@@ -71,4 +72,4 @@ async def download_file(task_id: str):
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
+    uvicorn.run(app, host="0.0.0.0", port=8001, log_level="info")
