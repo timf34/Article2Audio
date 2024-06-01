@@ -1,5 +1,4 @@
 import logging
-import time
 import uuid
 from fastapi import FastAPI, BackgroundTasks, HTTPException
 from fastapi.responses import FileResponse
@@ -9,7 +8,6 @@ from readers import substack, articles
 from utils import estimate_processing_time, get_domain
 
 app = FastAPI()
-
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 tasks = {}
@@ -21,9 +19,6 @@ async def process_article(request: URLRequest, background_tasks: BackgroundTasks
     domain = get_domain(url)
     logging.info(f"Domain extracted: {domain}")
 
-    print("we in here")
-
-
     try:
         if "substack.com" in domain:
             scraper = substack.SubstackScraper()
@@ -31,23 +26,20 @@ async def process_article(request: URLRequest, background_tasks: BackgroundTasks
             scraper = articles.ArticleReader()
 
         task_id = str(uuid.uuid4())
-
         tasks[task_id] = {'status': 'scraping_url'}
 
         text = scraper.get_post_content(url)
         if not text:
             raise ValueError("No content found at the provided URL.")
 
-        estimated_time = estimate_processing_time(text)
-
         tasks[task_id] = {'status': 'creating_audio_file'}
         background_tasks.add_task(generate_audio_task, text, tasks, task_id)
+        return URLResponse(estimate_processing_time=estimate_processing_time(text), task_id=task_id)
 
-        print(task_id)
-        return URLResponse(estimated_time=estimated_time, task_id=task_id)
     except Exception as e:
-        error_message = str(e) or "Failed to process the URL. Please check the URL and try again."
-        raise HTTPException(status_code=400, detail=error_message)
+        logging.error(f"Error processing article: {str(e)}")
+        raise HTTPException(status_code=400,
+                            detail=str(e) or "Failed to process the URL. Please check the URL and try again.")
 
 
 @app.get("/api/status/{task_id}", response_model=StatusResponse)
@@ -67,9 +59,11 @@ async def download_file(task_id: str):
     task = tasks.get(task_id)
     if not task or task['status'] != 'completed':
         raise HTTPException(status_code=404, detail="File not ready")
-    return FileResponse(f"data/output/{task_id}.mp3", media_type='application/octet-stream', filename=f"{task_id}.mp3")
+    return FileResponse(path=f"data/output/{task_id}.mp3", media_type='application/octet-stream',
+                        filename=f"{task_id}.mp3")
 
 
 if __name__ == '__main__':
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8001, log_level="info")
