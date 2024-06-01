@@ -20,7 +20,7 @@ def generate_audio_task(text: str, tasks: Dict[str, str], task_id: str) -> None:
     print("in generate_audio_task")
 
     if DEVELOPMENT:
-        temp_file_path = "../speech.mp3"
+        temp_file_path = "./speech.mp3"
     else:
         print("before generate audio")
         audio_segments = generate_audio(text)
