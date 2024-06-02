@@ -1,4 +1,5 @@
 import logging
+import os
 import uuid
 from fastapi import FastAPI, BackgroundTasks, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -73,8 +74,11 @@ async def download_file(task_id: str):
     task = tasks.get(task_id)
     if not task or task['status'] != 'completed':
         raise HTTPException(status_code=404, detail="File not ready")
-    return FileResponse(path=f"data/output/{task_id}.mp3", media_type='application/octet-stream',
-                        filename=f"{task_id}.mp3")
+    file_path = task.get('file_path')
+    if not file_path or not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(file_path, media_type='application/octet-stream', filename=f"{task_id}.mp3")
+
 
 
 if __name__ == '__main__':
