@@ -18,10 +18,16 @@ export const downloadFile = async (taskId) => {
     const response = await axios.get(`${API_URL}/download/${taskId}`, {
       responseType: 'blob',
     });
+    console.log("response", response);
+
+    const fileName = response.headers['content-disposition']
+      .split('filename=')[1]
+      .replace(/"/g, '');
+
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `${taskId}.mp3`);
+    link.setAttribute('download', fileName);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -30,4 +36,5 @@ export const downloadFile = async (taskId) => {
     throw error;
   }
 };
+
 

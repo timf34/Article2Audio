@@ -18,6 +18,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"]
 )
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -41,6 +42,7 @@ async def process_article(request: URLRequest, background_tasks: BackgroundTasks
         tasks[task_id] = {'status': 'scraping_url'}
 
         text = scraper.get_post_content(url)
+        # TODO: Add error handling in case these are None or ""
         article_name = scraper.get_article_name(url)
         author_name = scraper.get_author_name(url)
         del scraper  # Clean up the scraper object
@@ -49,7 +51,7 @@ async def process_article(request: URLRequest, background_tasks: BackgroundTasks
 
         estimated_time = estimate_processing_time(text)
 
-        tasks[task_id] = {'status': 'creating_audio_file'}
+        tasks[task_id] = {'status': 'creating_audio_file', 'article_name': article_name, 'author_name': author_name}
         background_tasks.add_task(generate_audio_task, text, article_name, author_name, tasks, task_id)
 
         logging.info(f"Returning response with estimated_time: {estimated_time} and task_id: {task_id}")
@@ -78,10 +80,11 @@ async def download_file(task_id: str):
     if not task or task['status'] != 'completed':
         raise HTTPException(status_code=404, detail="File not ready")
     file_path = task.get('file_path')
+    file_name = task.get('file_name')
     if not file_path or not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
-    return FileResponse(file_path, media_type='application/octet-stream', filename=f"{task_id}.mp3")
-
+    headers = {'Content-Disposition': f'attachment; filename="{file_name}.mp3"'}  # Explicitly setting as FileResponse doesn't seem to be sending it...
+    return FileResponse(file_path, media_type='application/octet-stream', headers=headers)
 
 
 if __name__ == '__main__':
