@@ -14,8 +14,20 @@ export const getStatus = async (taskId) => {
 };
 
 export const downloadFile = async (taskId) => {
-  const response = await axios.get(`${API_URL}/download/${taskId}`, {
-    responseType: 'blob',
-  });
-  return response.data;
+  try {
+    const response = await axios.get(`${API_URL}/download/${taskId}`, {
+      responseType: 'blob',
+    });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${taskId}.mp3`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error("Error in downloadFile:", error);
+    throw error;
+  }
 };
+
