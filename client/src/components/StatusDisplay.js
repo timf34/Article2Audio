@@ -1,14 +1,14 @@
 // src/components/StatusDisplay.js
 import React from 'react';
 
-const StatusDisplay = ({ status, downloadLink }) => {
+const StatusDisplay = ({ status, downloadLink, onDownload }) => {
   return (
     <div>
       <p>Status: {status}</p>
-      {downloadLink && (
-        <a href={downloadLink} download>
+      {status === 'completed' && (
+        <button onClick={onDownload}>
           Download Audio
-        </a>
+        </button>
       )}
     </div>
   );
