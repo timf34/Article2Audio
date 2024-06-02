@@ -7,6 +7,7 @@ import time
 
 from io import BytesIO
 from openai import OpenAI
+from pathlib import Path
 from pydub import AudioSegment
 from typing import List, Dict
 
@@ -15,30 +16,19 @@ from config import AUDIO_FILE_NAME, DEVELOPMENT, LAST_MODIFIED_FILE_NAME, OPENAI
 openai_client = OpenAI(api_key=OPENAI_KEY)
 
 
-# Temp
 def generate_audio_task(text: str, tasks: Dict[str, str], task_id: str) -> None:
-    print("in generate_audio_task")
-
-    if DEVELOPMENT:
-        temp_file_path = "./speech.mp3"
-    else:
-        print("before generate audio")
-        audio_segments = generate_audio(text)
-        print("after generate audio")
-        merged_audio = merge_audio_segments(audio_segments)
-        print("after merge audio")
-        with open(LAST_MODIFIED_FILE_NAME, 'w') as file:
-            file.write(datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
-        print("after write last modified")
-        save_audio_file(merged_audio)
-        tasks[task_id] = {'status': 'complete'}
-        print("after save audio file")
-
-        # Get current working directory
-        pwd = os.getcwd()
-        print(f"Audio file saved in {pwd} as {AUDIO_FILE_NAME}")
-        logging.info(f"Audio file saved in {pwd} as {AUDIO_FILE_NAME}")
-
+    try:
+        if DEVELOPMENT:
+            temp_file_path = "../speech.mp3"
+        else:
+            audio_segments = generate_audio(text)
+            merged_audio = merge_audio_segments(audio_segments)
+            save_path = save_audio_file(merged_audio, task_id)
+            tasks[task_id] = {'status': 'completed', 'file_path': save_path}
+            logging.info(f"Audio file saved in {save_path}")
+    except Exception as e:
+        logging.error(f"Failed to generate audio: {e}")
+        tasks[task_id] = {'status': 'failed', 'detail': str(e)}
 
 def split_text_into_chunks(text, max_length=4096) -> List[str]:
     words = text.split()
@@ -93,13 +83,26 @@ def save_audio_to_temp_file(merged_audio: AudioSegment) -> str:
         return temp_file.name
 
 
-def save_audio_file(merged_audio: AudioSegment) -> None:
-    print("About to save the audio file")
-    merged_audio.export(AUDIO_FILE_NAME, format="mp3")
-    print(f"Audio file saved as {AUDIO_FILE_NAME}")
-    # Check if it was saved successfully
-    if not os.path.exists(AUDIO_FILE_NAME):
-        raise ValueError("Failed to save the audio file.")
+def save_audio_file(merged_audio: AudioSegment, task_id: str) -> str:
+    try:
+        output_dir = Path("data/output/")
+        if not output_dir.exists():
+            logging.info(f"Creating directory: {output_dir}")
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+        file_path = output_dir / f"{task_id}.mp3"
+        logging.info(f"About to save the audio file to {file_path}")
+        merged_audio.export(file_path.as_posix(), format="mp3")
+        logging.info(f"Audio file saved as {file_path}")
+
+        # Check if it was saved successfully
+        if not file_path.exists():
+            raise ValueError("Failed to save the audio file.")
+
+        return file_path.as_posix()
+    except Exception as e:
+        logging.error(f"Error in save_audio_file: {e}")
+        raise
 
 
 def time_audio_generation_per_character(client, text) -> float:
