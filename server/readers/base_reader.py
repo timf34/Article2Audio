@@ -66,3 +66,11 @@ class BaseReader:
         Given a URL, returns the content of the post
         """
         raise NotImplementedError("Subclasses must implement this method")
+
+    @abstractmethod
+    def get_article_name(self, url: str) -> str:
+        raise NotImplementedError("Subclasses must implement this method")
+
+    @abstractmethod
+    def get_author_name(self, url: str) -> Optional[str]:
+        raise NotImplementedError("Subclasses must implement this method")

@@ -40,6 +40,8 @@ class SubstackScraper(BaseReader):
     def __init__(self):
         super().__init__()
 
+        self.soup = None
+
     @staticmethod
     def html_to_text(html_content: str) -> str:
         """
@@ -75,16 +77,16 @@ class SubstackScraper(BaseReader):
 
         return url.split("/")[-1] + filetype
 
-    def extract_post_content(self, soup: BeautifulSoup) -> str:
+    def extract_post_content(self, soup: BeautifulSoup, url: str) -> str:
         """
         Converts substack post soup to markdown, returns metadata and content
         """
-        title = soup.select_one("h1.post-title, h2").text.strip()  # When a video is present, the title is demoted to h2
+        title = self.get_article_name(url)
 
         subtitle_element = soup.select_one("h3.subtitle")
         subtitle = subtitle_element.text.strip() if subtitle_element else ""
 
-        author_name = soup.select_one("a._decoration-hover-underline_1k90y_298").text.strip()
+        author_name = self.get_author_name(url)
 
         content_div = soup.select_one("div.available-content")
 
@@ -99,13 +101,42 @@ class SubstackScraper(BaseReader):
         return post_content
 
     def get_post_content(self, url: str) -> str:
-        soup = self.get_url_soup(url)
-        if soup is None:
-            # TODO: raise an error
-            return
 
-        post_content = self.extract_post_content(soup)
+        if self.soup is None:
+            self.soup = self.get_url_soup(url)
+
+        # If the soup is still None, raise an error
+        if self.soup is None:
+            # TODO: raise an error
+            raise ValueError("Error fetching page within substack.py")
+
+        post_content = self.extract_post_content(self.soup, url)
         return post_content
+
+    # Note: this and get_author_name don't seem the best designed... in that we have to pass the URL through more,
+    #  but we can come back to this again.
+    def get_article_name(self, url: str) -> str:
+        if self.soup is None:
+            self.soup = self.get_url_soup(url)
+
+        # If the soup is still None, raise an error
+        if self.soup is None:
+            raise ValueError("Error fetching page within substack.py")
+
+        # Article title
+        # When a video is present, the title is demoted to h2
+        return self.soup.select_one("h1.post-title, h2").text.strip()
+
+    def get_author_name(self, url: str) -> Optional[str]:
+        if self.soup is None:
+            self.soup = self.get_url_soup(url)
+
+        # If the soup is still None, raise an error
+        if self.soup is None:
+            raise ValueError("Error fetching page within substack.py")
+
+        # Author name
+        return self.soup.select_one("a._decoration-hover-underline_1k90y_298").text.strip()
 
     def save_post(self, url: str) -> None:
         """

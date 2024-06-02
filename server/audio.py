@@ -1,34 +1,41 @@
-from datetime import datetime
 import logging
 
-import os
 import tempfile
 import time
 
 from io import BytesIO
+from mutagen.easyid3 import EasyID3
 from openai import OpenAI
 from pathlib import Path
 from pydub import AudioSegment
 from typing import List, Dict
 
 from config import AUDIO_FILE_NAME, DEVELOPMENT, LAST_MODIFIED_FILE_NAME, OPENAI_KEY
+from utils import sanitize_filename
 
 openai_client = OpenAI(api_key=OPENAI_KEY)
 
 
-def generate_audio_task(text: str, tasks: Dict[str, str], task_id: str) -> None:
+def generate_audio_task(text: str, article_name: str, author_name: str, tasks: Dict[str, str], task_id: str) -> None:
     try:
         if DEVELOPMENT:
             temp_file_path = "../speech.mp3"
         else:
             audio_segments = generate_audio(text)
             merged_audio = merge_audio_segments(audio_segments)
-            save_path = save_audio_file(merged_audio, task_id)
+
+            print(f"article_name: {article_name}")
+            print(f"author_name: {author_name}")
+            print(f"tasks: {tasks}")
+            print(f"task_id: {task_id}")
+
+            save_path = save_audio_file(merged_audio, article_name, author_name)
             tasks[task_id] = {'status': 'completed', 'file_path': save_path}
             logging.info(f"Audio file saved in {save_path}")
     except Exception as e:
         logging.error(f"Failed to generate audio: {e}")
         tasks[task_id] = {'status': 'failed', 'detail': str(e)}
+
 
 def split_text_into_chunks(text, max_length=4096) -> List[str]:
     words = text.split()
@@ -83,17 +90,26 @@ def save_audio_to_temp_file(merged_audio: AudioSegment) -> str:
         return temp_file.name
 
 
-def save_audio_file(merged_audio: AudioSegment, task_id: str) -> str:
+def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: str) -> str:
     try:
         output_dir = Path("data/output/")
         if not output_dir.exists():
             logging.info(f"Creating directory: {output_dir}")
             output_dir.mkdir(parents=True, exist_ok=True)
 
-        file_path = output_dir / f"{task_id}.mp3"
+        sanitized_title = sanitize_filename(article_name)
+        sanitized_author = sanitize_filename(author_name)
+
+        file_path = output_dir / f"{sanitized_title} by {sanitized_author}.mp3"
         logging.info(f"About to save the audio file to {file_path}")
         merged_audio.export(file_path.as_posix(), format="mp3")
         logging.info(f"Audio file saved as {file_path}")
+
+        # Add metadata using mutagen
+        audio = EasyID3(file_path.as_posix())
+        audio['title'] = sanitized_title
+        audio['artist'] = author_name  # Use the original author name for metadata
+        audio.save()
 
         # Check if it was saved successfully
         if not file_path.exists():

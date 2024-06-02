@@ -41,13 +41,16 @@ async def process_article(request: URLRequest, background_tasks: BackgroundTasks
         tasks[task_id] = {'status': 'scraping_url'}
 
         text = scraper.get_post_content(url)
+        article_name = scraper.get_article_name(url)
+        author_name = scraper.get_author_name(url)
+        del scraper  # Clean up the scraper object
         if not text:
             raise ValueError("No content found at the provided URL.")
 
         estimated_time = estimate_processing_time(text)
 
         tasks[task_id] = {'status': 'creating_audio_file'}
-        background_tasks.add_task(generate_audio_task, text, tasks, task_id)
+        background_tasks.add_task(generate_audio_task, text, article_name, author_name, tasks, task_id)
 
         logging.info(f"Returning response with estimated_time: {estimated_time} and task_id: {task_id}")
         return URLResponse(estimated_time=estimated_time, task_id=task_id)
