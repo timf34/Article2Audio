@@ -30,7 +30,7 @@ def generate_audio_task(text: str, article_name: str, author_name: str, tasks: D
             print(f"task_id: {task_id}")
 
             save_path = save_audio_file(merged_audio, article_name, author_name)
-            tasks[task_id] = {'status': 'completed', 'file_path': save_path}
+            tasks[task_id] = {'status': 'completed', 'file_path': save_path, 'file_name': article_name}
             logging.info(f"Audio file saved in {save_path}")
     except Exception as e:
         logging.error(f"Failed to generate audio: {e}")
@@ -100,7 +100,8 @@ def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: 
         sanitized_title = sanitize_filename(article_name)
         sanitized_author = sanitize_filename(author_name)
 
-        file_path = output_dir / f"{sanitized_title} by {sanitized_author}.mp3"
+        file_name = f"{sanitized_title} by {sanitized_author}.mp3"
+        file_path = output_dir / file_name
         logging.info(f"About to save the audio file to {file_path}")
         merged_audio.export(file_path.as_posix(), format="mp3")
         logging.info(f"Audio file saved as {file_path}")

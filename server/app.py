@@ -83,7 +83,7 @@ async def download_file(task_id: str):
     file_name = task.get('file_name')
     if not file_path or not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
-    headers = {'Content-Disposition': f'attachment; filename="{file_name}.mp3"'}  # Explicitly setting as FileResponse doesn't seem to be sending it...
+    headers = {'Content-Disposition': f'attachment; filename="{file_name}.mp3"'}  # Explicitly setting content disposition
     return FileResponse(file_path, media_type='application/octet-stream', headers=headers)
 
 
