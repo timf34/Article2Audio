@@ -25,41 +25,26 @@ It has simple authentication to secure access and can be easily deployed on Verc
    cd Article2Audio
    ```
 
-2. **Create a `.env` file with necessary environment variables:**
+2. **Create a `.env` file with necessary environment variables in the `/server` dir:**
+    ```bash
+    cd server   
+    touch .env
+    ```
+
+    Add the following environment variables to the `.env` file:
    ```plaintext
    OPENAI_KEY=your-openai-key
    LOGIN_PASSWORD=your-password
    SECRET_KEY=your-secret-key
    ```
+   
+3. **Build and run Docker**
+    ```bash
+    docker-compose up --build
+    ```
+   
+Enjoy your audio versions of any article you want! 🎉
 
-3. **Install required packages:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Run the application:**
-   ```bash
-   python app.py
-   ```
-
-The app will be available at `http://localhost:5000`.
-
-### Deployment on Vercel
-
-1. **Fork or clone the repository to your GitHub account.**
-
-2. **Connect your GitHub repository to Vercel:**
-   - Go to [Vercel.com](https://vercel.com) and sign in.
-   - Click on "New Project", find your repository, and select it.
-   - Configure your project settings and specify the build commands and output directory if necessary.
-
-3. **Add environment variables in Vercel:**
-   - In your project settings on Vercel, navigate to the 'Environment Variables' section.
-   - Add the following variables:
-     - `OPENAI_KEY`: Your OpenAI API key.
-     - `LOGIN_PASSWORD`: A password for login authentication.
-     - `SECRET_KEY`: A secret key used for securely signing the session.
-
-4. **Deploy the project:**
-   - Vercel will automatically deploy your project when you push changes to your repository.
-   - Access your project URL as provided by Vercel.
+Note that it can take up to a few minutes to generate the audio file depending on the length of the article. 
+Will look into optimizing this/ running it concurrently without OpenAI rate limiting issues in the future. 
+UI and iterface will be updated soon too!
