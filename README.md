@@ -8,11 +8,11 @@ Article2Audio is a straightforward web app designed for personal use, allowing u
 lovely audio files. It extracts the content of an article, formats it nicely in preparation of audio conversion,
 then uses OpenAI's Text to Speech API to produce the audio file. 
 
-It has simple authentication to secure access and can be easily deployed on Vercel or run locally.
 
 ### Sample Audio Output
 
-![Sample Audio]("speech.mp3")
+
+![Sample Audio]("server/data/sample.mp3")
 
 
 ## Setup Instructions
