@@ -14,7 +14,8 @@ app = FastAPI()
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Allow your frontend origin
+    # Allow your frontend origin
+    allow_origins=["http://localhost:3000", "http://157.245.72.83:3000/"],  # Second here is my DigitalOcean droplet IP
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
