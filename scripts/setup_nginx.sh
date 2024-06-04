@@ -10,6 +10,10 @@ BACKEND_PORT=8001
 apt update
 apt install -y nginx
 
+# Configure the firewall to allow Nginx traffic
+ufw allow 'Nginx Full'
+ufw reload
+
 # Create Nginx configuration file
 cat <<EOF > /etc/nginx/sites-available/$DOMAIN
 server {
