@@ -19,6 +19,19 @@ cat <<EOF > /etc/nginx/sites-available/$DOMAIN
 server {
     listen 80;
     server_name $DOMAIN $WWW_DOMAIN;
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name $DOMAIN $WWW_DOMAIN;
+
+    ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_dhparam /etc/ssl/certs/dhparam.pem;
 
     location / {
         proxy_pass http://localhost:$FRONTEND_PORT;
@@ -39,7 +52,7 @@ server {
 EOF
 
 # Enable the Nginx configuration
-ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
 
 # Test the Nginx configuration
 nginx -t
