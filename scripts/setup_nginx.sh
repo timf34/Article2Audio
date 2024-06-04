@@ -2,7 +2,7 @@
 
 # Variables
 DOMAIN="article2audio.com"
-WWW_DOMAIN="www.article2audio"
+WWW_DOMAIN="www.article2audio.com"
 FRONTEND_PORT=3000
 BACKEND_PORT=8001
 
