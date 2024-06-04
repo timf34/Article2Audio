@@ -11,7 +11,7 @@ then uses OpenAI's Text to Speech API to produce the audio file.
 
 ### Sample Audio Output
 
-[Sample Audio](https://github.com/timf34/Article2Audio/blob/e074a1aae4b50d212595e9e7f02d89828bcf0100/server/data/output/The%20Most%20Precious%20Resource%20is%20Agency.mp4)
+[Sample Audio](https://raw.githubusercontent.com/timf34/Article2Audio/main/server/data/output/The%20Most%20Precious%20Resource%20is%20Agency.mp4)
 
 ## Setup Instructions
 
