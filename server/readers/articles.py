@@ -12,9 +12,9 @@ class ArticleReader(BaseReader):
 
     def get_post_content(self, url: str) -> str:
         if self.article is None:
-            article = newspaper.article(url)
+            self.article = newspaper.article(url)
         title = self.article.title
-        author = self.article.authors[0] if len(article.authors) > 0 else None
+        author = self.article.authors[0] if len(self.article.authors) > 0 else None
         content = self.article.text
         return self.combine_metadata_and_content(title, author, None, content)
 
