@@ -11,7 +11,10 @@ then uses OpenAI's Text to Speech API to produce the audio file.
 
 ### Sample Audio Output
 
-![Sample Audio](server/data/output/The%20Most%20Precious%20Resource%20is%20Agency.mp3)
+<audio controls>
+  <source src="server/data/output/The%20Most%20Precious%20Resource%20is%20Agency.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
 
 ## Setup Instructions
 
