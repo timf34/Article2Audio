@@ -31,7 +31,6 @@ server {
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
-    ssl_dhparam /etc/ssl/certs/dhparam.pem;
 
     location / {
         proxy_pass http://localhost:$FRONTEND_PORT;
