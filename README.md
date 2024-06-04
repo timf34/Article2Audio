@@ -1,7 +1,5 @@
 ﻿# Article2Audio
 
- _Not in a useable state right now! Will be soon, and easy to self-host, etc.!_
-
 **Convert articles to audio using OpenAI's Text to Speech API.**
 
 Article2Audio is a straightforward web app designed for personal use, allowing users to convert online articles to 
