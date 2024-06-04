@@ -41,7 +41,7 @@ then uses OpenAI's Text to Speech API to produce the audio file.
     docker-compose up --build
     ```
    
-Enjoy your audio versions of any article you want! 🎉
+Enjoy your audio versions of any article you want at http://localhost:3000! 🎉
 
 Note that it can take up to a few minutes to generate the audio file depending on the length of the article. 
 Will look into optimizing this/ running it concurrently without OpenAI rate limiting issues in the future. 

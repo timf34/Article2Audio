@@ -1,7 +1,7 @@
 // src/api.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8001/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001/api';
 
 export const processArticle = async (url) => {
   const response = await axios.post(`${API_URL}/process_article`, { url });
