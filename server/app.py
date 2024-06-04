@@ -19,7 +19,9 @@ app.add_middleware(
         "http://localhost:3000",
         "http://157.245.72.83:3000",
         "http://article2audio.com",
-        "http://www.article2audio.com"
+        "http://www.article2audio.com",
+        "https://article2audio.com",
+        "https://www.article2audio.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
