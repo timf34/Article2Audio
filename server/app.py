@@ -15,7 +15,12 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     # Allow your frontend origin
-    allow_origins=["http://localhost:3000", "http://157.245.72.83:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://157.245.72.83:3000",
+        "http://article2audio.com",
+        "http://www.article2audio.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
