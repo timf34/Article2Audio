@@ -11,9 +11,7 @@ then uses OpenAI's Text to Speech API to produce the audio file.
 
 ### Sample Audio Output
 
-
-![Sample Audio]("server/data/sample.mp3")
-
+[Sample Audio](server/data/output/The%20Most%20Precious%20Resource%20is%20Agency.mp3)
 
 ## Setup Instructions
 
