@@ -13,5 +13,9 @@ FROM nginx:alpine
 
 # Copy the build output to the Nginx html directory
 COPY --from=build /app/build /usr/share/nginx/html
+
+# Ensure the favicon.ico is correctly copied
+COPY --from=build /app/public/favicon.ico /usr/share/nginx/html/favicon.ico
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
