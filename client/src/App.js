@@ -7,6 +7,7 @@ import { processArticle, getStatus, downloadFile } from './api';
 const App = () => {
   const [taskId, setTaskId] = useState(null);
   const [status, setStatus] = useState('');
+  const [estimatedTime, setEstimatedTime] = useState(0);
   const [downloadLink, setDownloadLink] = useState('');
 
   useEffect(() => {
@@ -33,6 +34,7 @@ const App = () => {
     try {
       const response = await processArticle(url);
       setTaskId(response.task_id);
+      setEstimatedTime(response.estimated_time);
       setStatus('Processing...');
     } catch (error) {
       console.error("Error in handleSubmit:", error);
@@ -52,7 +54,7 @@ const App = () => {
     <div>
       <h1>Article to Audio Converter</h1>
       <URLForm onSubmit={handleSubmit} />
-      <StatusDisplay status={status} downloadLink={downloadLink} onDownload={handleDownload} />
+      <StatusDisplay status={status} estimatedTime={estimatedTime}  downloadLink={downloadLink} onDownload={handleDownload} />
     </div>
   );
 };
