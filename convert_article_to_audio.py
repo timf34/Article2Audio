@@ -16,7 +16,8 @@ from server.audio import create_audio_file
 from server.readers import substack, articles
 from server.utils import get_domain
 
-# TODO: Need to add a way for users to add their openai key here
+# Place your openAI api key here
+OPENAI_KEY: str = ""
 
 
 def convert_url_to_audio_file(url: str) -> None:
@@ -25,7 +26,6 @@ def convert_url_to_audio_file(url: str) -> None:
 
     try:
         if "substack.com" in domain:
-            # TODO: need to recognize custom substack domains
             scraper = substack.SubstackScraper()
         else:
             scraper = articles.ArticleReader()
@@ -38,10 +38,10 @@ def convert_url_to_audio_file(url: str) -> None:
         if not text:
             raise ValueError("No content found at the provided URL.")
 
-        file_path = create_audio_file(text, article_name, author_name)
+        file_path = create_audio_file(text, article_name, author_name, OPENAI_KEY)
         print(f"Audio file saved in {file_path}")
     except Exception as e:
-        raise ValueError(f"Error processing article: {e}")
+        raise f"Error processing article: {e}"
 
 
 def main():
