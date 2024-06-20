@@ -6,7 +6,7 @@ Article2Audio is a straightforward web app designed for personal use, allowing u
 lovely audio files. It extracts the content of an article, formats it nicely in preparation of audio conversion,
 then uses OpenAI's Text to Speech API to produce the audio file. 
 
-For ease of use, we also include a simple python script which allows users to directly convert articles to audio files
+For ease of use, we also include a simple python script which allows users to directly convert article URLs to audio files
 without needing to spin up the web app. 
 
 
