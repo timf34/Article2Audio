@@ -2,16 +2,13 @@
 Including a simple script to directly convert a URL into an audio file rather than using the web app.
 """
 import os
-import uuid
 import logging
 import sys
 
 from typing import List
 
-# Append the server directory to path
-sys.path.append(os.path.join(os.path.dirname(__file__), "./server"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "./server"))  # For relative imports within /server scripts
 
-from server.models import URLRequest
 from server.audio import create_audio_file
 from server.readers import substack, articles
 from server.utils import get_domain
