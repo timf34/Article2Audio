@@ -69,13 +69,6 @@ The script `convert_article_to_audio.py` allows for two modes of operation:
    LOGIN_PASSWORD=your-password
    SECRET_KEY=your-secret-key
    ```
-   
-_Via running two terminals, one with NPM and one with python_
-
-
-
-
-### Docker Setup
 
 3. **Build and run Docker**
     ```bash
@@ -86,4 +79,5 @@ Enjoy your audio versions of any article you want at http://localhost:3000! 🎉
 
 Note that it can take up to a few minutes to generate the audio file depending on the length of the article. 
 Will look into optimizing this/ running it concurrently without OpenAI rate limiting issues in the future. 
-UI and iterface will be updated soon too!
+UI and iterface will be updated soon too, particularly with making the audio files
+persist on the web interface so they're more readily available!
