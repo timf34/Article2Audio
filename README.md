@@ -26,7 +26,7 @@ without needing to spin up the web app.
 
 2. **Add your openAI api key**
    
-   Open `convert_article_to_audio.py` and add your OpenAI API key to the `OPENAI_KEY` variable at the top of the file.
+   Open `convert_article_urls_to_audio.py` and add your OpenAI API key to the `OPENAI_KEY` variable at the top of the file.
 
 3. **Install the required packages:**
    ```bash
@@ -35,16 +35,16 @@ without needing to spin up the web app.
 
 ### Usage
 
-The script `convert_article_to_audio.py` allows for two modes of operation:
+The script `convert_article_urls_to_audio.py` allows for two modes of operation:
 
 1. **Default Mode**: By default it will use the URLs specified in the `HARDCODED_URLS` list at the top of the file.
    ```bash
-   python convert_article_to_audio.py
+   python convert_article_urls_to_audio.py
    ```
    
 2. **Command Line Mode**: Overrides hardcoded URLs by specifying URLs via the command line with the --urls option.
    ```bash
-   python convert_article_to_audio.py --urls https://www.thefitzwilliam.com/p/james-joyce-was-a-complicated-man "https://www.honest-broker.com/p/how-picasso-turned-me-into-a-strategy"
+   python convert_article_urls_to_audio.py --urls https://www.thefitzwilliam.com/p/james-joyce-was-a-complicated-man "https://www.honest-broker.com/p/how-picasso-turned-me-into-a-strategy"
    ```
 
 ##  Web App
