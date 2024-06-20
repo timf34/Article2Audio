@@ -1,6 +1,7 @@
 """
 Including a simple script to directly convert a URL into an audio file rather than using the web app.
 """
+import argparse
 import os
 import logging
 import sys
@@ -15,6 +16,12 @@ from server.utils import get_domain
 
 # Place your openAI api key here
 OPENAI_KEY: str = ""
+
+# Hardcoded URLs - These will be used if no URLs are provided via command line
+HARDCODED_URLS: List[str] = [
+    "https://gabiabrao.substack.com/p/how-to-make-love",
+    # Add more hardcoded URLs here
+]
 
 
 def convert_url_to_audio_file(url: str) -> None:
@@ -42,13 +49,17 @@ def convert_url_to_audio_file(url: str) -> None:
 
 
 def main():
-    urls: List[str] = [
-        "https://gabiabrao.substack.com/p/how-to-make-love",
-    ]
+    parser = argparse.ArgumentParser(description="Convert URLs to audio files.")
+    parser.add_argument("--urls", nargs="*",
+                        help="Optional: a list of URLs to convert to audio files. Overrides hardcoded URLs.")
+    args = parser.parse_args()
 
-    for url in urls:
-        logging.info(f"Processing URL: {url}")
-        convert_url_to_audio_file(url)
+    urls_to_process = args.urls if args.urls else HARDCODED_URLS
+
+    for url in urls_to_process:
+        print(url)
+        print(type(url))
+        # convert_url_to_audio_file(url)
 
 
 if __name__ == "__main__":
