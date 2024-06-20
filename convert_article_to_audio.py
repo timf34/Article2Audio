@@ -57,9 +57,7 @@ def main():
     urls_to_process = args.urls if args.urls else HARDCODED_URLS
 
     for url in urls_to_process:
-        print(url)
-        print(type(url))
-        # convert_url_to_audio_file(url)
+        convert_url_to_audio_file(url)
 
 
 if __name__ == "__main__":
