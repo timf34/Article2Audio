@@ -136,7 +136,7 @@ class SubstackScraper(BaseReader):
             raise ValueError("Error fetching page within substack.py")
 
         # Author name
-        return self.soup.select_one("a._decoration-hover-underline_1k90y_298").text.strip()
+        return self.soup.select_one("a._decoration-hover-underline_1ip2z_298").text.strip()
 
     def save_post(self, url: str) -> None:
         """
