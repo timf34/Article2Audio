@@ -21,7 +21,7 @@ def generate_audio_task(text: str, article_name: str, author_name: str, tasks: D
         if DEVELOPMENT:
             temp_file_path = "../speech.mp3"
         else:
-            audio_segments = generate_audio(text)
+            audio_segments = generate_audio(text, OPENAI_KEY)
             merged_audio = merge_audio_segments(audio_segments)
 
             print(f"article_name: {article_name}")
@@ -35,6 +35,13 @@ def generate_audio_task(text: str, article_name: str, author_name: str, tasks: D
     except Exception as e:
         logging.error(f"Failed to generate audio: {e}")
         tasks[task_id] = {'status': 'failed', 'detail': str(e)}
+
+
+def create_audio_file(text: str, article_name: str, author_name: str, openai_key: str) -> str:
+    audio_segments = generate_audio(text, openai_key)
+    merged_audio = merge_audio_segments(audio_segments)
+    file_path = save_audio_file(merged_audio, article_name, author_name)
+    return file_path
 
 
 def split_text_into_chunks(text, max_length=4096) -> List[str]:
@@ -55,13 +62,11 @@ def split_text_into_chunks(text, max_length=4096) -> List[str]:
     return chunks
 
 
-def generate_audio(text) -> List[AudioSegment]:
-    print("before split_text_into_chunks")
+def generate_audio(text: str, openai_key: str) -> List[AudioSegment]:
+    openai_client = OpenAI(api_key=openai_key)
     chunks = split_text_into_chunks(text)
-    print("after split_text_into_chunks")
     audio_segments = []
     for chunk in chunks:
-        print("before client.audio.speech.create")
         # time.sleep(10)
         response = openai_client.audio.speech.create(
             model="tts-1",
@@ -92,7 +97,7 @@ def save_audio_to_temp_file(merged_audio: AudioSegment) -> str:
 
 def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: str) -> str:
     try:
-        output_dir = Path("data/output/")
+        output_dir = Path("data")
         if not output_dir.exists():
             logging.info(f"Creating directory: {output_dir}")
             output_dir.mkdir(parents=True, exist_ok=True)
@@ -124,7 +129,7 @@ def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: 
 
 def time_audio_generation_per_character(client, text) -> float:
     start_time = time.time()
-    audio_segments = generate_audio(client, text)
+    audio_segments = generate_audio(text, OPENAI_KEY)
     merged_audio = merge_audio_segments(audio_segments)
     end_time = time.time()
 
