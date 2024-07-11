@@ -136,7 +136,8 @@ class SubstackScraper(BaseReader):
             raise ValueError("Error fetching page within substack.py")
 
         # Author name
-        return self.soup.select_one("a._decoration-hover-underline_1ip2z_298").text.strip()
+        # TODO: the 2nd last sequence of digits (the len = 5 one) changes frequently! Need a more robust method
+        return self.soup.select_one("a._decoration-hover-underline_3axfk_298").text.strip()
 
     def save_post(self, url: str) -> None:
         """
