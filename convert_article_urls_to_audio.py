@@ -13,13 +13,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "./server"))  # For rela
 from server.audio import create_audio_file
 from server.readers import substack, articles
 from server.utils import get_domain
-
-# Place your openAI api key here
-OPENAI_KEY: str = ""
+from server.config import OPENAI_KEY
 
 # Hardcoded URLs - These will be used if no URLs are provided via command line
 HARDCODED_URLS: List[str] = [
     "https://gabiabrao.substack.com/p/how-to-make-love",
+    # "https://www.paulgraham.com/google.html"
     # Add more hardcoded URLs here
 ]
 
@@ -45,7 +44,7 @@ def convert_url_to_audio_file(url: str) -> None:
         file_path = create_audio_file(text, article_name, author_name, OPENAI_KEY)
         print(f"Audio file saved in {file_path}")
     except Exception as e:
-        raise f"Error processing article: {e}"
+        raise Exception(f"Error converting URL to audio: {e}") from e
 
 
 def main():
