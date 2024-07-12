@@ -13,7 +13,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "./server"))  # For rela
 from server.audio import create_audio_file
 from server.readers import substack, articles
 from server.utils import get_domain
-from server.config import OPENAI_KEY
+from server.config import OPENAI_KEY  # Be sure to add a /server/.env file with the OPENAI_KEY var
+
+if not OPENAI_KEY:
+    raise EnvironmentError("OPENAI_KEY environment variable is not set. Please add it to your /server/.env file.")
+
 
 # Hardcoded URLs - These will be used if no URLs are provided via command line
 HARDCODED_URLS: List[str] = [
