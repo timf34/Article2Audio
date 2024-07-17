@@ -12,11 +12,23 @@ class AudioFile(Base):
     file_name = Column(String, nullable=False)  # Make sure to enforce non-null for essential fields
     creation_date = Column(DateTime, default=datetime.utcnow)  # Timestamp for when the entry is created
 
+
 # Configuration of the database engine and session
 engine = create_engine('sqlite:///article2audio.db', echo=True)  # 'echo=True' is useful for debugging
 Session = scoped_session(sessionmaker(bind=engine))
 
 
+def singleton(class_):
+    instances = {}
+
+    def getinstance(*args, **kwargs):
+        if class_ not in instances:
+            instances[class_] = class_(*args, **kwargs)
+        return instances[class_]
+    return getinstance
+
+
+@singleton
 class DatabaseManager:
     def __init__(self):
         Base.metadata.create_all(engine)
