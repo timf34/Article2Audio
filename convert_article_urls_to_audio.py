@@ -23,7 +23,6 @@ if not OPENAI_KEY:
 HARDCODED_URLS: List[str] = [
     "https://gabiabrao.substack.com/p/how-to-make-love",
     # "https://www.paulgraham.com/google.html"
-    # Add more hardcoded URLs here
 ]
 
 
