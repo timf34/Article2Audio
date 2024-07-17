@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import URLForm from './components/URLForm';
 import StatusDisplay from './components/StatusDisplay';
+import AudioFileList from './components/AudioFileList';
 import { processArticle, getStatus, downloadFile } from './api';
 
 const App = () => {
@@ -55,6 +56,7 @@ const App = () => {
       <h1>Article to Audio Converter</h1>
       <URLForm onSubmit={handleSubmit} />
       <StatusDisplay status={status} estimatedTime={estimatedTime}  downloadLink={downloadLink} onDownload={handleDownload} />
+      <AudioFileList />
     </div>
   );
 };

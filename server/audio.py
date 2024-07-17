@@ -10,10 +10,12 @@ from pathlib import Path
 from pydub import AudioSegment
 from typing import List, Dict
 
-from config import AUDIO_FILE_NAME, DEVELOPMENT, LAST_MODIFIED_FILE_NAME, OPENAI_KEY
+from config import AUDIO_DATA_DIR_NAME, DEVELOPMENT, LAST_MODIFIED_FILE_NAME, OPENAI_KEY
+from database import DatabaseManager
 from utils import sanitize_filename
 
 openai_client = OpenAI(api_key=OPENAI_KEY)
+db_manager = DatabaseManager()
 
 
 def generate_audio_task(text: str, article_name: str, author_name: str, tasks: Dict[str, str], task_id: str) -> None:
@@ -97,7 +99,7 @@ def save_audio_to_temp_file(merged_audio: AudioSegment) -> str:
 
 def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: str) -> str:
     try:
-        output_dir = Path("data")
+        output_dir = Path(AUDIO_DATA_DIR_NAME)
         if not output_dir.exists():
             logging.info(f"Creating directory: {output_dir}")
             output_dir.mkdir(parents=True, exist_ok=True)
@@ -120,6 +122,8 @@ def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: 
         # Check if it was saved successfully
         if not file_path.exists():
             raise ValueError("Failed to save the audio file.")
+
+        db_manager.add_audio_file(file_name)
 
         return file_path.as_posix()
     except Exception as e:

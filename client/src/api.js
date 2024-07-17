@@ -37,4 +37,9 @@ export const downloadFile = async (taskId) => {
   }
 };
 
+export const getAudioFiles = async () => {
+  const response = await axios.get(`${API_URL}/audio_files`);
+  return response.data;
+};
+
 

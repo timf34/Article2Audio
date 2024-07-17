@@ -9,6 +9,8 @@ from audio import generate_audio_task
 from readers import substack, articles
 from utils import estimate_processing_time, get_domain
 
+from database import DatabaseManager
+
 app = FastAPI()
 
 # Add CORS middleware
@@ -33,6 +35,8 @@ app.add_middleware(
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 tasks = {}
+
+db_manager = DatabaseManager()
 
 @app.post("/api/process_article", response_model=URLResponse)
 async def process_article(request: URLRequest, background_tasks: BackgroundTasks):
@@ -60,7 +64,7 @@ async def process_article(request: URLRequest, background_tasks: BackgroundTasks
 
         estimated_time = estimate_processing_time(text)
 
-        tasks[task_id] = {'status': 'creating_audio_file', 'article_name': article_name, 'author_name': author_name}
+        tasks[task_id] = {'status': 'Creating audio file...', 'article_name': article_name, 'author_name': author_name}
         background_tasks.add_task(generate_audio_task, text, article_name, author_name, tasks, task_id)
 
         logging.info(f"Returning response with estimated_time: {estimated_time} and task_id: {task_id}")
@@ -83,18 +87,23 @@ async def get_status(task_id: str):
     return StatusResponse(**task)
 
 
-@app.get("/api/download/{task_id}")
-async def download_file(task_id: str):
-    task = tasks.get(task_id)
-    if not task or task['status'] != 'completed':
-        raise HTTPException(status_code=404, detail="File not ready")
-    file_path = task.get('file_path')
-    file_name = task.get('file_name')
-    if not file_path or not os.path.exists(file_path):
+@app.get("/api/download/{file_id}")
+async def download_file(file_id: int):
+    audio_file = db_manager.get_audio_file(file_id)
+    if not audio_file:
         raise HTTPException(status_code=404, detail="File not found")
-    headers = {'Content-Disposition': f'attachment; filename="{file_name}.mp3"'}  # Explicitly setting content disposition
+    file_path = audio_file.file_path
+    file_name = audio_file.file_name
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+    headers = {'Content-Disposition': f'attachment; filename="{file_name}.mp3"'}
     return FileResponse(file_path, media_type='application/octet-stream', headers=headers)
 
+
+@app.get("/api/audio_files")
+async def list_audio_files():
+    files = db_manager.list_audio_files()
+    return [{"id": file.id, "file_name": file.file_name, "creation_date": file.creation_date} for file in files]
 
 if __name__ == '__main__':
     import uvicorn
