@@ -72,7 +72,7 @@ The script `convert_article_urls_to_audio.py` allows for two modes of operation:
 
 3. **Build and run Docker**
     ```bash
-    docker-compose up --build
+    docker compose up --build
     ```
    
 Enjoy your audio versions of any article you want at http://localhost:3000! 🎉
