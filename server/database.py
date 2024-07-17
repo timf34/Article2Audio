@@ -1,7 +1,11 @@
+import os
+
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 from datetime import datetime
+
+from config import AUDIO_DATA_DIR_NAME
 
 Base = declarative_base()
 
@@ -10,6 +14,7 @@ class AudioFile(Base):
     __tablename__ = 'audio_files'
     id = Column(Integer, primary_key=True)
     file_name = Column(String, nullable=False)  # Make sure to enforce non-null for essential fields
+    file_path =Column(String, nullable=False)
     creation_date = Column(DateTime, default=datetime.utcnow)  # Timestamp for when the entry is created
 
 
@@ -35,7 +40,7 @@ class DatabaseManager:
 
     def add_audio_file(self, file_name):
         session = Session()
-        new_file = AudioFile(file_name=file_name)
+        new_file = AudioFile(file_name=file_name, file_path=os.path.join(AUDIO_DATA_DIR_NAME, f"{file_name}.mp3"))
         session.add(new_file)
         session.commit()
         return new_file.id
