@@ -10,7 +10,8 @@ def sanitize_filename(filename: str) -> str:
 
 
 def estimate_processing_time(text: str) -> int:
-    return int(len(text) * 0.01)  # 0.01 seconds per character
+    # TODO: temp change to account for parallel processing
+    return int(len(text) * 0.003)  # 0.01 seconds per character
 
 
 def get_domain(url: str) -> str:
