@@ -96,7 +96,7 @@ async def download_file(file_id: int):
     file_name = audio_file.file_name
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
-    headers = {'Content-Disposition': f'attachment; filename="{file_name}.mp3"'}
+    headers = {'Content-Disposition': f'attachment; filename="{file_name}"'}
     return FileResponse(file_path, media_type='application/octet-stream', headers=headers)
 
 
