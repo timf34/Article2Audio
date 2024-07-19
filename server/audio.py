@@ -1,5 +1,5 @@
+import concurrent.futures
 import logging
-
 import tempfile
 import time
 
@@ -23,7 +23,7 @@ def generate_audio_task(text: str, article_name: str, author_name: str, tasks: D
         if DEVELOPMENT:
             temp_file_path = "../speech.mp3"
         else:
-            audio_segments = generate_audio(text, OPENAI_KEY)
+            audio_segments = generate_audio_in_parallel(text)
             merged_audio = merge_audio_segments(audio_segments)
 
             print(f"article_name: {article_name}")
@@ -40,7 +40,7 @@ def generate_audio_task(text: str, article_name: str, author_name: str, tasks: D
 
 
 def create_audio_file(text: str, article_name: str, author_name: str, openai_key: str) -> str:
-    audio_segments = generate_audio(text, openai_key)
+    audio_segments = generate_audio_sequentially(text, openai_key)
     merged_audio = merge_audio_segments(audio_segments)
     file_path = save_audio_file(merged_audio, article_name, author_name)
     return file_path
@@ -64,12 +64,10 @@ def split_text_into_chunks(text, max_length=4096) -> List[str]:
     return chunks
 
 
-def generate_audio(text: str, openai_key: str) -> List[AudioSegment]:
-    openai_client = OpenAI(api_key=openai_key)
+def generate_audio_sequentially(text: str) -> List[AudioSegment]:
     chunks = split_text_into_chunks(text)
     audio_segments = []
     for chunk in chunks:
-        # time.sleep(10)
         response = openai_client.audio.speech.create(
             model="tts-1",
             voice="alloy",
@@ -79,6 +77,30 @@ def generate_audio(text: str, openai_key: str) -> List[AudioSegment]:
         audio_segments.append(AudioSegment.from_file(audio_data, format="mp3"))
     print("finished generating audio segments")
     return audio_segments
+
+
+def generate_audio_in_parallel(text: str) -> List[AudioSegment]:
+    chunks = split_text_into_chunks(text, max_length=2048)   # TODO: be smarter about splitting the text, it affects the sound where its split, so should split at the end of a sentence or paragraph or such.
+    audio_segments = [None] * len(chunks)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future_to_index = {executor.submit(generate_audio_chunk, chunk, openai_client): i for i, chunk in enumerate(chunks)}
+        for future in concurrent.futures.as_completed(future_to_index):
+            index = future_to_index[future]
+            try:
+                audio_segments[index] = future.result()
+            except Exception as e:
+                logging.error(f"Failed to generate audio chunk at index {index}: {e}")
+    return audio_segments
+
+
+def generate_audio_chunk(chunk, openai_client) -> AudioSegment:
+    response = openai_client.audio.speech.create(
+        model="tts-1",
+        voice="alloy",
+        input=chunk
+    )
+    audio_data = BytesIO(response.content)
+    return AudioSegment.from_file(audio_data, format="mp3")
 
 
 def merge_audio_segments(audio_segments) -> AudioSegment:
@@ -133,7 +155,7 @@ def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: 
 
 def time_audio_generation_per_character(client, text) -> float:
     start_time = time.time()
-    audio_segments = generate_audio(text, OPENAI_KEY)
+    audio_segments = generate_audio_sequentially(text, OPENAI_KEY)
     merged_audio = merge_audio_segments(audio_segments)
     end_time = time.time()
 
