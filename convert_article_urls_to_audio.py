@@ -21,8 +21,8 @@ if not OPENAI_KEY:
 
 # Hardcoded URLs - These will be used if no URLs are provided via command line
 HARDCODED_URLS: List[str] = [
-    "https://gabiabrao.substack.com/p/how-to-make-love",
-    # "https://www.paulgraham.com/google.html"
+    # "https://gabiabrao.substack.com/p/how-to-make-love",
+    "https://www.paulgraham.com/getideas.html"
 ]
 
 
