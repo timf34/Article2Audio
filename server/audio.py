@@ -105,13 +105,7 @@ def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: 
             output_dir.mkdir(parents=True, exist_ok=True)
 
         sanitized_title = sanitize_filename(article_name)
-
-        if author_name is not None:
-            sanitized_author = sanitize_filename(author_name)
-        else:
-            # TODO: temp handling None author name - fix asap with scrapin specific unit tests
-            sanitized_author = "unknown"
-            author_name = "unknown"
+        sanitized_author = sanitize_filename(author_name)
 
         file_name = f"{sanitized_title} by {sanitized_author}.mp3"
         file_path = output_dir / file_name
