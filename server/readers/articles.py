@@ -27,6 +27,8 @@ class ArticleReader(BaseReader):
 
         if self.article.authors:
             return self.article.authors[0]
+        elif self.article.meta_site_name:
+            return self.article.meta_site_name
 
         # Hardcoded logic for specific authors
         author_hardcoded = {
