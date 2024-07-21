@@ -17,8 +17,7 @@ services:
     env_file:
       - ./server/.env
     volumes:
-      - ./server/data/audio_data:/app/data/audio_data
-      - ./server/data/database.db:/app/data/database.db
+      - ./server/data:/app/data
 
 networks:
   app-network:
