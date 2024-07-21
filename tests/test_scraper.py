@@ -14,14 +14,16 @@ from readers import substack, articles
 # Collection of official news sites, substacks, and personal blogs
 # TODO: find shorter blog posts
 URLS: List[str] = [
-    "https://www.paulgraham.com/getideas.html",
-    "https://www.avabear.xyz/p/written-in-the-body",
-    "https://www.theatlantic.com/ideas/archive/2024/07/microsoft-outage-technological-systems-fail/679110/",
-    "https://www.newyorker.com/tech/annals-of-technology/the-first-light-of-the-trinity-atomic-test",
-    "https://jsomers.net/blog/speed-matters",
-    "https://www.benkuhn.net/conviction/",
-    "https://map.simonsarris.com/p/the-most-precious-resource-is-agency",
-    "https://gabiabrao.substack.com/p/how-to-read"
+    # "https://www.paulgraham.com/getideas.html",
+    # "https://www.avabear.xyz/p/written-in-the-body",
+    # "https://www.theatlantic.com/ideas/archive/2024/07/microsoft-outage-technological-systems-fail/679110/",
+    # "https://www.newyorker.com/tech/annals-of-technology/the-first-light-of-the-trinity-atomic-test",
+    # "https://jsomers.net/blog/speed-matters",
+    # "https://www.benkuhn.net/conviction/",
+    # "https://map.simonsarris.com/p/the-most-precious-resource-is-agency",
+    # "https://gabiabrao.substack.com/p/how-to-read",
+    "https://jsomers.net/blog/feynmans-rigor",
+    "https://www.atlasobscura.com/articles/ambergris-chanel-ingredient"
 ]
 
 
