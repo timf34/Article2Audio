@@ -1,7 +1,7 @@
 import logging
 import os
 import uuid
-from fastapi import FastAPI, BackgroundTasks, HTTPException, Response
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from models import URLRequest, URLResponse, StatusResponse
@@ -107,10 +107,15 @@ async def list_audio_files():
     return [{"id": file.id, "file_name": file.file_name, "creation_date": file.creation_date} for file in files]
 
 
-@app.get("/rss.xml")
-def rss_feed():
+@app.api_route("/rss.xml", methods=["GET", "HEAD"])
+async def rss_feed(request: Request):
     content = get_rss_content()
-    return Response(content=content, media_type="application/rss+xml")
+    headers = {"Content-Type": "application/rss+xml"}
+
+    if request.method == "HEAD":
+        return Response(content="", headers=headers)
+    else:
+        return Response(content=content, headers=headers, media_type="application/rss+xml")
 
 
 if __name__ == '__main__':
