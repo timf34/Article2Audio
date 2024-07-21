@@ -70,7 +70,13 @@ The script `convert_article_urls_to_audio.py` allows for two modes of operation:
    SECRET_KEY=your-secret-key
    ```
 
-3. **Build and run Docker**
+3. **Setup Nginx** (Optional)
+
+   If you would like to set up a proper web server, you can use Nginx. This setup script will need to be adjusted 
+   based on your Nginx configuration.
+
+
+4. **Build and run Docker**
     ```bash
     docker compose up --build
     ```
