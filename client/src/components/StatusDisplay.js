@@ -4,7 +4,7 @@ const StatusDisplay = ({ status, estimatedTime, downloadLink, onDownload }) => {
   const [displayTime, setDisplayTime] = useState(estimatedTime);
 
   useEffect(() => {
-    if ((status === 'Processing...' || status === 'Creating audio file...') && estimatedTime > 0) {
+    if ((status === 'Creating audio file...') && estimatedTime > 0) {
       setDisplayTime(estimatedTime);
       const countdown = setInterval(() => {
         setDisplayTime((prevTime) => {
