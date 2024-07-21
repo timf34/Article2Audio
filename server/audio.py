@@ -10,7 +10,7 @@ from pathlib import Path
 from pydub import AudioSegment
 from typing import List, Dict
 
-from config import AUDIO_DATA_DIR_NAME, DEVELOPMENT, LAST_MODIFIED_FILE_NAME, OPENAI_KEY
+from config import MP3_DATA_DIR_PATH, DEVELOPMENT, OPENAI_KEY
 from database import DatabaseManager
 from utils import sanitize_filename
 
@@ -123,7 +123,7 @@ def save_audio_to_temp_file(merged_audio: AudioSegment) -> str:
 
 def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: str) -> str:
     try:
-        output_dir = Path(AUDIO_DATA_DIR_NAME)
+        output_dir = Path(MP3_DATA_DIR_PATH)
         if not output_dir.exists():
             logging.info(f"Creating directory: {output_dir}")
             output_dir.mkdir(parents=True, exist_ok=True)

@@ -16,6 +16,9 @@ services:
       - "8001:8001"
     env_file:
       - ./server/.env
+    volumes:
+      - ./server/data/audio_data:/app/data/audio_data
+      - ./server/data/database.db:/app/data/database.db
 
 networks:
   app-network:

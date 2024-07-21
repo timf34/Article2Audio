@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 from datetime import datetime
 
-from config import AUDIO_DATA_DIR_NAME
+from config import MP3_DATA_DIR_PATH, DATABASE_FILE_PATH
 
 Base = declarative_base()
 
@@ -19,7 +19,7 @@ class AudioFile(Base):
 
 
 # Configuration of the database engine and session
-engine = create_engine('sqlite:///article2audio.db', echo=True)  # 'echo=True' is useful for debugging
+engine = create_engine(f'sqlite:///{DATABASE_FILE_PATH}', echo=True)  # 'echo=True' is useful for debugging
 Session = scoped_session(sessionmaker(bind=engine))
 
 
@@ -40,7 +40,7 @@ class DatabaseManager:
 
     def add_audio_file(self, file_name):
         session = Session()
-        new_file = AudioFile(file_name=file_name, file_path=os.path.join(AUDIO_DATA_DIR_NAME, f"{file_name}"))
+        new_file = AudioFile(file_name=file_name, file_path=os.path.join(MP3_DATA_DIR_PATH, f"{file_name}"))
         session.add(new_file)
         session.commit()
         return new_file.id
