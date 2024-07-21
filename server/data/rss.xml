@@ -32,6 +32,17 @@
       <itunes:explicit>false</itunes:explicit>
     </item>
 
+    <item>
+      <title>Do Elephants Have Souls by The New Atlantis</title>
+      <itunes:author>Tim</itunes:author>
+      <description>Podcast description...</description>
+      <pubDate>Tue, 01 Jun 2023 00:00:00 GMT</pubDate>
+      <enclosure url="https://article2audio.s3.amazonaws.com/Do%20Elephants%20Have%20Souls%20by%20The+New%20Atlantis.mp3" length="12345678" type="audio/mpeg"/>
+      <guid isPermaLink="false">unique-identifier-for-this-episode</guid>
+      <itunes:duration>01:44:02</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+
     <!-- Add more <item> elements for each episode -->
 
   </channel>

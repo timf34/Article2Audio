@@ -1,7 +1,7 @@
 import logging
 import os
 import uuid
-from fastapi import FastAPI, BackgroundTasks, HTTPException
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from models import URLRequest, URLResponse, StatusResponse
@@ -10,6 +10,7 @@ from readers import substack, articles
 from utils import estimate_processing_time, get_domain
 
 from database import DatabaseManager
+from rss_manager import get_rss_content
 
 app = FastAPI()
 
@@ -104,6 +105,13 @@ async def download_file(file_id: int):
 async def list_audio_files():
     files = db_manager.list_audio_files()
     return [{"id": file.id, "file_name": file.file_name, "creation_date": file.creation_date} for file in files]
+
+
+@app.get("/rss.xml")
+def rss_feed():
+    content = get_rss_content()
+    return Response(content=content, media_type="application/rss+xml")
+
 
 if __name__ == '__main__':
     import uvicorn
