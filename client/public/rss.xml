@@ -16,6 +16,11 @@
     <itunes:explicit>false</itunes:explicit>
     <atom:link href="https://article2audio.com/rss.xml" rel="self" type="application/rss+xml" />
 
+    <itunes:owner>
+      <itunes:name>Tim Farrelly</itunes:name>
+      <itunes:email>timf34@gmail.com</itunes:email>
+    </itunes:owner>
+
     <item>
       <title>The Reddits by Paul Graham</title>
       <itunes:author>Tim</itunes:author>
