@@ -9,7 +9,6 @@ const App = () => {
   const [taskId, setTaskId] = useState(null);
   const [status, setStatus] = useState('');
   const [estimatedTime, setEstimatedTime] = useState(0);
-  const [downloadLink, setDownloadLink] = useState('');
 
   useEffect(() => {
     if (taskId) {
@@ -19,7 +18,6 @@ const App = () => {
           setStatus(statusResponse.status);
           if (statusResponse.status === 'completed') {
             clearInterval(interval);
-            setDownloadLink(true);
           }
         } catch (error) {
           console.error("Error fetching status:", error);
@@ -40,14 +38,6 @@ const App = () => {
     } catch (error) {
       console.error("Error in handleSubmit:", error);
       setStatus('Failed to submit URL.');
-    }
-  };
-
-  const handleDownload = async () => {
-    try {
-      await downloadFile(taskId);
-    } catch (error) {
-      console.error("Error in handleDownload:", error);
     }
   };
 
