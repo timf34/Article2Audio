@@ -27,7 +27,7 @@
       <description>Description of this episode goes here.</description>
       <pubDate>Tue, 01 Jun 2023 00:00:00 GMT</pubDate>
       <enclosure url="https://article2audio.s3.amazonaws.com/The%20Reddits%20by%20Paul%20Graham.mp3" length="12345678" type="audio/mpeg"/>
-      <guid isPermaLink="false">unique-identifier-for-this-episode</guid>
+      <guid isPermaLink="false">make-this-programmatically-unique</guid>
       <itunes:duration>00:06:16</itunes:duration>
       <itunes:explicit>false</itunes:explicit>
     </item>
