@@ -11,7 +11,7 @@
     <copyright>© 2024 Tim Farrelly</copyright>
     <itunes:author>Tim Farrelly</itunes:author>
     <description>Tim's articles</description>
-    <itunes:image href="https://article2audio.com/article2audio_logo192.png"/>
+    <itunes:image href="https://article2audio.com/podcast_cover.jpg"/>
     <itunes:category text="Technology"/>
     <itunes:explicit>false</itunes:explicit>
     <atom:link href="https://article2audio.com/rss.xml" rel="self" type="application/rss+xml" />
