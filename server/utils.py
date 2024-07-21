@@ -2,11 +2,13 @@ import logging
 from urllib.parse import urlparse
 
 
+# TODO: why did I have this...? The commas and such are useful/ look good
 def sanitize_filename(filename: str) -> str:
     """
-    Sanitize a filename by removing any characters that are not alphanumeric or in (' ', '.', '_')
+    Sanitize a filename by removing any characters that are not alphanumeric or in (' ', '.', '_'). We replace them
+    with an empty string.
     """
-    return "".join(c if c.isalnum() or c in (' ', '.', '_') else '_' for c in filename)
+    return "".join(c if c.isalnum() or c in (' ', '.', '_') else '' for c in filename)
 
 
 def estimate_processing_time(text: str) -> int:
@@ -21,3 +23,8 @@ def get_domain(url: str) -> str:
 
 def log_message(message: str) -> None:
     logging.info(message)
+
+
+s1 = "here's an apostrophe, '"
+
+print(sanitize_filename(s1))
