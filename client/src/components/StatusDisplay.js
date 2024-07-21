@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const StatusDisplay = ({ status, estimatedTime, downloadLink, onDownload }) => {
+const StatusDisplay = ({ status, estimatedTime,}) => {
   const [displayTime, setDisplayTime] = useState(estimatedTime);
 
   useEffect(() => {
@@ -24,15 +24,15 @@ const StatusDisplay = ({ status, estimatedTime, downloadLink, onDownload }) => {
   return (
     <div>
       <p>Status: {status}</p>
-      {(status === 'Processing...' || status === 'Creating audio file...') && (
+      {(status === 'Creating audio file...') && (
         <p>
           Estimated time: {displayTime > 0 ? `${displayTime} seconds` : 'any minute now!'}
         </p>
       )}
       {status === 'completed' && (
-        <button onClick={onDownload}>
-          Download Audio
-        </button>
+        <p>
+          Audio ready, refresh the page!
+        </p>
       )}
     </div>
   );

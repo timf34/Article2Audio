@@ -55,7 +55,7 @@ const App = () => {
     <div>
       <h1>Article to Audio Converter</h1>
       <URLForm onSubmit={handleSubmit} />
-      <StatusDisplay status={status} estimatedTime={estimatedTime}  downloadLink={downloadLink} onDownload={handleDownload} />
+      <StatusDisplay status={status} estimatedTime={estimatedTime}/>
       <AudioFileList />
     </div>
   );
