@@ -1,5 +1,6 @@
 import concurrent.futures
 import logging
+import os
 import tempfile
 import time
 
@@ -10,8 +11,9 @@ from pathlib import Path
 from pydub import AudioSegment
 from typing import List, Dict
 
-from config import MP3_DATA_DIR_PATH, DEVELOPMENT, OPENAI_KEY
+from config import MP3_DATA_DIR_PATH, DEVELOPMENT, OPENAI_KEY, S3_BUCKET_URL
 from database import DatabaseManager
+from rss_manager import update_rss_feed
 from s3_manager import upload_file_to_s3
 from utils import sanitize_filename
 
@@ -152,6 +154,18 @@ def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: 
 
         if upload_file_to_s3(file_path.as_posix(), file_name):
             print(f"Successfully uploaded {file_name} to S3")
+
+            file_url = f"{S3_BUCKET_URL}/{file_name.replace(' ', '%20')}"
+
+            update_rss_feed(
+                title=sanitized_title,
+                author_name=author_name,
+                description=f"Audio version of '{sanitized_title}' by {author_name}",
+                file_url=file_url,
+                file_size=str(os.path.getsize(file_path)),
+                duration=str(merged_audio.duration_seconds)  # NOTE: I think this is supposed to be in H:MM:SS format
+            )
+
         else:
             print(f"Failed to upload {file_name} to S3")
 
@@ -163,7 +177,7 @@ def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: 
 
 def time_audio_generation_per_character(client, text) -> float:
     start_time = time.time()
-    audio_segments = generate_audio_sequentially(text, OPENAI_KEY)
+    audio_segments = generate_audio_sequentially(text)
     merged_audio = merge_audio_segments(audio_segments)
     end_time = time.time()
 

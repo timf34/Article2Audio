@@ -1,30 +1,58 @@
-from lxml import etree
 import os
+import random
+
 from datetime import datetime
+from lxml import etree
 
 from config import RSS_FILE_PATH
 
 
-def update_rss_feed(title, description, file_url, file_size, duration) -> None:
+def update_rss_feed(
+        title: str,
+        author_name: str,
+        description: str,
+        file_url: str,
+        file_size: str,
+        duration: str
+) -> None:
+
     if not os.path.exists(RSS_FILE_PATH):
+        print("RSS file note found... Creating new initial RSS feed")
         create_initial_rss_feed()
 
-    tree = etree.parse(RSS_FILE_PATH)
-    root = tree.getroot()
-    channel = root.find("channel")
+    try:
+        tree = etree.parse(RSS_FILE_PATH)
+        root = tree.getroot()
+        channel = root.find("channel")
 
-    new_item = etree.SubElement(channel, "item")
-    etree.SubElement(new_item, "title").text = title
-    etree.SubElement(new_item, "description").text = description
-    etree.SubElement(new_item, "pubDate").text = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S +0000")
-    etree.SubElement(new_item, "guid", isPermaLink="false").text = file_url
-    enclosure = etree.SubElement(new_item, "enclosure", url=file_url, length=str(file_size), type="audio/mpeg")
-    etree.SubElement(new_item, "{http://www.itunes.com/dtds/podcast-1.0.dtd}duration").text = duration
-    etree.SubElement(new_item, "{http://www.itunes.com/dtds/podcast-1.0.dtd}explicit").text = "false"
-    etree.SubElement(new_item, "{http://www.itunes.com/dtds/podcast-1.0.dtd}author").text = "Tim"
+        new_item = etree.SubElement(channel, "item")
+        etree.SubElement(new_item, "title").text = title
+        etree.SubElement(new_item, "description").text = description
+        etree.SubElement(new_item, "pubDate").text = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S +0000")
 
-    etree.indent(tree, space="\t", level=0)
-    tree.write(RSS_FILE_PATH, xml_declaration=True, encoding="UTF-8", pretty_print=True)
+        # Generating a unique identifier for the item using a timestamp and a random number
+        guid_text = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S%f')}-{random.randint(1000, 9999)}"
+        etree.SubElement(new_item, "guid", isPermaLink="false").text = guid_text
+
+        enclosure = etree.SubElement(
+            new_item,
+            "enclosure",
+            url=file_url,
+            length=file_size,
+            type="audio/mpeg",
+        )
+
+        etree.SubElement(new_item, "{http://www.itunes.com/dtds/podcast-1.0.dtd}duration").text = duration
+        etree.SubElement(new_item, "{http://www.itunes.com/dtds/podcast-1.0.dtd}explicit").text = "false"
+        etree.SubElement(new_item, "{http://www.itunes.com/dtds/podcast-1.0.dtd}author").text = author_name
+
+        etree.indent(tree, space="\t", level=0)
+        tree.write(RSS_FILE_PATH, xml_declaration=True, encoding="UTF-8", pretty_print=True)
+
+        print(f"RSS feed successfully updated with title: {title}")
+
+    except Exception as e:
+        print(f"Error updating RSS feed: {e}")
 
 
 def create_initial_rss_feed():
