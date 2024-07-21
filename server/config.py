@@ -13,4 +13,10 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 MP3_DATA_DIR_PATH = "data/audio_data"
 DATABASE_FILE_PATH = "data/database.db"
 RSS_FILE_PATH = "data/rss.xml"
+
+S3_BUCKET_URL = "https://article2audio.s3.amazonaws.com"
+S3_BUCKET_NAME = "article2audio"
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', None)
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', None)
+
 DEVELOPMENT = False

@@ -12,6 +12,7 @@ from typing import List, Dict
 
 from config import MP3_DATA_DIR_PATH, DEVELOPMENT, OPENAI_KEY
 from database import DatabaseManager
+from s3_manager import upload_file_to_s3
 from utils import sanitize_filename
 
 openai_client = OpenAI(api_key=OPENAI_KEY)
@@ -148,6 +149,11 @@ def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: 
             raise ValueError("Failed to save the audio file.")
 
         db_manager.add_audio_file(file_name)
+
+        if upload_file_to_s3(file_path.as_posix(), file_name):
+            print(f"Successfully uploaded {file_name} to S3")
+        else:
+            print(f"Failed to upload {file_name} to S3")
 
         return file_path.as_posix()
     except Exception as e:
