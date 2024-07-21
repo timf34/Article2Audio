@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Tim's Articles</title>
+    <link>https://article2audio.com</link>
+    <language>en-us</language>
+    <copyright>© 2024 Tim Farrelly</copyright>
+    <itunes:author>Tim Farrelly</itunes:author>
+    <description>Tim's articles</description>
+    <itunes:image href="https://article2audio.com/article2audio_logo192.png"/>
+    <itunes:category text="Technology"/>
+    <itunes:explicit>false</itunes:explicit>
+
+    <item>
+      <title>The Reddits by Paul Graham</title>
+      <itunes:author>Tim</itunes:author>
+      <description>Description of this episode goes here.</description>
+      <pubDate>Tue, 01 Jun 2023 00:00:00 GMT</pubDate>
+      <enclosure url="https://article2audio.s3.amazonaws.com/The%20Reddits%20by%20Paul%20Graham.mp3" length="12345678" type="audio/mpeg"/>
+      <guid isPermaLink="false">unique-identifier-for-this-episode</guid>
+      <itunes:duration>00:06:16</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+
+    <!-- Add more <item> elements for each episode -->
+
+  </channel>
+</rss>
