@@ -15,7 +15,8 @@ It's currently **very** barebones and a work in progress, but the functionality 
 <p align="center">
   <img src="assets/overview_screenshot.jpg" alt="Overview Screenshot" width="800"/>
   <br>
-  <em><strong>Simple</strong> web app (left), synced articles available as a personal podcast on Spotify (right)</em></em>
+  <em><strong>Simple</strong> web app (left), synced articles available as a personal podcast on Spotify, Podbean, etc. 
+  (right)</em></em>
 </p>
 
 
