@@ -47,15 +47,15 @@ It's currently **very** barebones and a work in progress, but the functionality 
 
    **Server `.env` file**
 
-  Then create a `.env` file within the `/server` directory and add the following environment variables:
-  ```bash
+   Then create a `.env` file within the `/server` directory and add the following environment variables:
+   ```bash
    cd server
    echo "OPENAI_KEY=your-openai-key" > .env
    echo "AWS_ACCESS_KEY_ID=your-aws-access-key" >> .env
    echo "AWS_SECRET_ACCESS_KEY=your-aws-secret-key" >> .env
-  ```
-  Note that the AWS keys are optional and for uploading to S3 for the RSS feed, 
-  but the OpenAI key is required for the app to function.
+   ```
+   Note that the AWS keys are optional and for uploading to S3 for the RSS feed, 
+   but the OpenAI key is required for the app to function.
 
       
 3. **Setup Nginx** (Optional)
