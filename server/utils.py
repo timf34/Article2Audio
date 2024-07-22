@@ -23,8 +23,3 @@ def get_domain(url: str) -> str:
 
 def log_message(message: str) -> None:
     logging.info(message)
-
-
-s1 = "here's an apostrophe, '"
-
-print(sanitize_filename(s1))
