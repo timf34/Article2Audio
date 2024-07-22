@@ -33,27 +33,28 @@ It's currently **very** barebones and a work in progress, but the functionality 
    cd Article2Audio
    ```
    
-   2. **Create `.env` files**
-      1. _Client `.env` file_
+2. **Create `.env` files**
 
-         First create a `.env` file within the `/client` directory and add your localhost (or URL if you're deploying)
-         to it:
-         ```bash
-          cd client
-          echo "REACT_APP_API_URL=http://localhost:8001/api" > .env
-         ```
+   **Client `.env` file_**
 
-      2. _Server `.env` file_
-   
-        Then create a `.env` file within the `/server` directory and add the following environment variables:
-        ```bash
-         cd server
-         echo "OPENAI_KEY=your-openai-key" > .env
-         echo "AWS_ACCESS_KEY_ID=your-aws-access-key" >> .env
-         echo "AWS_SECRET_ACCESS_KEY=your-aws-secret-key" >> .env
-        ```
-        Note that the AWS keys are optional and for uploading to S3 for the RSS feed, 
-        but the OpenAI key is required for the app to function.
+   First create a `.env` file within the `/client` directory and add your localhost (or URL if you're deploying)
+   to it:
+   ```bash
+    cd client
+    echo "REACT_APP_API_URL=http://localhost:8001/api" > .env
+   ```
+
+   **Server `.env` file**
+
+  Then create a `.env` file within the `/server` directory and add the following environment variables:
+  ```bash
+   cd server
+   echo "OPENAI_KEY=your-openai-key" > .env
+   echo "AWS_ACCESS_KEY_ID=your-aws-access-key" >> .env
+   echo "AWS_SECRET_ACCESS_KEY=your-aws-secret-key" >> .env
+  ```
+  Note that the AWS keys are optional and for uploading to S3 for the RSS feed, 
+  but the OpenAI key is required for the app to function.
 
       
 3. **Setup Nginx** (Optional)
