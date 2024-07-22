@@ -42,8 +42,8 @@ def generate_audio_task(text: str, article_name: str, author_name: str, tasks: D
         tasks[task_id] = {'status': 'failed', 'detail': str(e)}
 
 
-def create_audio_file(text: str, article_name: str, author_name: str, openai_key: str) -> str:
-    audio_segments = generate_audio_sequentially(text, openai_key)
+def create_audio_file(text: str, article_name: str, author_name: str) -> str:
+    audio_segments = generate_audio_in_parallel(text)
     merged_audio = merge_audio_segments(audio_segments)
     file_path = save_audio_file(merged_audio, article_name, author_name)
     return file_path
