@@ -2,7 +2,7 @@ import logging
 from urllib.parse import urlparse
 
 
-# TODO: why did I have this...? The commas and such are useful/ look good
+# TODO: why did I have this...? The commas and such are useful/ look good... check database compat
 def sanitize_filename(filename: str) -> str:
     """
     Sanitize a filename by removing any characters that are not alphanumeric or in (' ', '.', '_'). We replace them
