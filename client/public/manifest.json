@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Article2Audio",
+  "name": "Article2Audio",
+  "description": "Convert article URLs to audio and sync to a personal podcast feed.",
   "icons": [
     {
       "src": "favicon.ico",
