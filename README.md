@@ -30,7 +30,7 @@ It's currently **very** barebones and a work in progress, but the functionality 
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/Article2Audio.git
+   git clone https://github.com/timf34/Article2Audio.git
    cd Article2Audio
    ```
    
