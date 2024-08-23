@@ -42,9 +42,9 @@ def generate_audio_task(text: str, article_name: str, author_name: str, tasks: D
             save_path = save_audio_file(merged_audio, article_name, author_name)
             del audio_segments
             del merged_audio
-            del save_path
             tasks[task_id] = {'status': 'completed', 'file_path': save_path, 'file_name': article_name}
             logging.info(f"Audio file saved in {save_path}")
+            del save_path
     except Exception as e:
         logging.error(f"Failed to generate audio: {e}")
         tasks[task_id] = {'status': 'failed', 'detail': str(e)}
