@@ -42,6 +42,7 @@ def generate_audio_task(text: str, article_name: str, author_name: str, tasks: D
             save_path = save_audio_file(merged_audio, article_name, author_name)
             del audio_segments
             del merged_audio
+            del save_path
             tasks[task_id] = {'status': 'completed', 'file_path': save_path, 'file_name': article_name}
             logging.info(f"Audio file saved in {save_path}")
     except Exception as e:
@@ -93,7 +94,7 @@ def generate_audio_sequentially(text: str) -> List[AudioSegment]:
 def generate_audio_in_parallel(text: str) -> List[AudioSegment]:
     chunks = split_text_into_chunks(text, max_length=2048)   # TODO: be smarter about splitting the text, it affects the sound where its split, so should split at the end of a sentence or paragraph or such.
     audio_segments = [None] * len(chunks)
-    with concurrent.futures.ProcessPoolExecutor() as executor:
+    with concurrent.futures.ThreadPoolExecutor() as executor:
         future_to_index = {executor.submit(generate_audio_chunk, chunk, openai_client): i for i, chunk in enumerate(chunks)}
         for future in concurrent.futures.as_completed(future_to_index):
             index = future_to_index[future]
@@ -116,8 +117,11 @@ def generate_audio_chunk(chunk, openai_client) -> AudioSegment:
     )
     audio_data = BytesIO(response.content)
     del response
+    audio_segment = AudioSegment.from_file(audio_data, format="mp3")
+    del audio_data
+    gc.collect()
     print("Finished generating audio chunk")
-    return AudioSegment.from_file(audio_data, format="mp3")
+    return audio_segment
 
 
 def merge_audio_segments(audio_segments) -> AudioSegment:
