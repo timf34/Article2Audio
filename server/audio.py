@@ -93,7 +93,7 @@ def generate_audio_sequentially(text: str) -> List[AudioSegment]:
 def generate_audio_in_parallel(text: str) -> List[AudioSegment]:
     chunks = split_text_into_chunks(text, max_length=2048)   # TODO: be smarter about splitting the text, it affects the sound where its split, so should split at the end of a sentence or paragraph or such.
     audio_segments = [None] * len(chunks)
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    with concurrent.futures.ProcessPoolExecutor() as executor:
         future_to_index = {executor.submit(generate_audio_chunk, chunk, openai_client): i for i, chunk in enumerate(chunks)}
         for future in concurrent.futures.as_completed(future_to_index):
             index = future_to_index[future]
@@ -107,6 +107,7 @@ def generate_audio_in_parallel(text: str) -> List[AudioSegment]:
     return audio_segments
 
 
+@profile
 def generate_audio_chunk(chunk, openai_client) -> AudioSegment:
     response = openai_client.audio.speech.create(
         model="tts-1",
@@ -114,6 +115,7 @@ def generate_audio_chunk(chunk, openai_client) -> AudioSegment:
         input=chunk
     )
     audio_data = BytesIO(response.content)
+    del response
     print("Finished generating audio chunk")
     return AudioSegment.from_file(audio_data, format="mp3")
 
