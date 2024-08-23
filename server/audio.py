@@ -17,10 +17,14 @@ from rss_manager import update_rss_feed
 from s3_manager import upload_file_to_s3
 from utils import sanitize_filename
 
+from memory_profiler import profile
+
+
 openai_client = OpenAI(api_key=OPENAI_KEY)
 db_manager = DatabaseManager()
 
 
+@profile
 def generate_audio_task(text: str, article_name: str, author_name: str, tasks: Dict[str, str], task_id: str) -> None:
     try:
         if DEVELOPMENT:
@@ -35,6 +39,8 @@ def generate_audio_task(text: str, article_name: str, author_name: str, tasks: D
             print(f"task_id: {task_id}")
 
             save_path = save_audio_file(merged_audio, article_name, author_name)
+            del audio_segments
+            del merged_audio
             tasks[task_id] = {'status': 'completed', 'file_path': save_path, 'file_name': article_name}
             logging.info(f"Audio file saved in {save_path}")
     except Exception as e:
@@ -82,10 +88,10 @@ def generate_audio_sequentially(text: str) -> List[AudioSegment]:
     return audio_segments
 
 
+@profile
 def generate_audio_in_parallel(text: str) -> List[AudioSegment]:
     chunks = split_text_into_chunks(text, max_length=2048)   # TODO: be smarter about splitting the text, it affects the sound where its split, so should split at the end of a sentence or paragraph or such.
     audio_segments = [None] * len(chunks)
-    print(audio_segments)
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_to_index = {executor.submit(generate_audio_chunk, chunk, openai_client): i for i, chunk in enumerate(chunks)}
         for future in concurrent.futures.as_completed(future_to_index):
