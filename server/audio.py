@@ -1,4 +1,5 @@
 import concurrent.futures
+import gc
 import logging
 import os
 import tempfile
@@ -98,6 +99,9 @@ def generate_audio_in_parallel(text: str) -> List[AudioSegment]:
             index = future_to_index[future]
             try:
                 audio_segments[index] = future.result()
+                # Explicitly delete future and trigger garbage collection
+                del future
+                gc.collect()
             except Exception as e:
                 logging.error(f"Failed to generate audio chunk at index {index}: {e}")
     return audio_segments
