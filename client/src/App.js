@@ -1,14 +1,14 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box } from '@mui/material';
 import URLForm from './components/URLForm';
 import StatusDisplay from './components/StatusDisplay';
 import AudioFileList from './components/AudioFileList';
-import { processArticle, getStatus } from './api';
+import { processArticle, getStatus, downloadFile } from './api';
 
-const App: React.FC = () => {
-  const [taskId, setTaskId] = useState<string | null>(null);
-  const [status, setStatus] = useState<string>('');
-  const [estimatedTime, setEstimatedTime] = useState<number>(0);
+const App = () => {
+  const [taskId, setTaskId] = useState(null);
+  const [status, setStatus] = useState('');
+  const [estimatedTime, setEstimatedTime] = useState(0);
 
   useEffect(() => {
     if (taskId) {
@@ -28,7 +28,7 @@ const App: React.FC = () => {
     }
   }, [taskId]);
 
-  const handleSubmit = async (url: string) => {
+  const handleSubmit = async (url) => {
     setStatus('Submitting...');
     try {
       const response = await processArticle(url);
@@ -42,16 +42,12 @@ const App: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <Box my={4}>
-        <Typography variant="h3" component="h1" gutterBottom>
-          Article to Audio Converter
-        </Typography>
-        <URLForm onSubmit={handleSubmit} />
-        <StatusDisplay status={status} estimatedTime={estimatedTime} />
-        <AudioFileList />
-      </Box>
-    </Container>
+    <div>
+      <h1>Article to Audio Converter</h1>
+      <URLForm onSubmit={handleSubmit} />
+      <StatusDisplay status={status} estimatedTime={estimatedTime}/>
+      <AudioFileList />
+    </div>
   );
 };
 
