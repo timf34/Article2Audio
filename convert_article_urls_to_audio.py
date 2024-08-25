@@ -21,7 +21,7 @@ if not OPENAI_KEY:
 
 # Hardcoded URLs - These will be used if no URLs are provided via command line
 HARDCODED_URLS: List[str] = [
-    "https://gabiabrao.substack.com/p/how-to-make-love",
+    "https://www.tabletmag.com/feature/american-vulcan-palmer-luckey-anduril",
     # "https://www.paulgraham.com/getideas.html"
 ]
 
@@ -44,8 +44,8 @@ def convert_url_to_audio_file(url: str) -> None:
         if not text:
             raise ValueError("No content found at the provided URL.")
 
-        file_path = create_audio_file(text, article_name, author_name)
-        print(f"Audio file saved in {file_path}")
+        # file_path = create_audio_file(text, article_name, author_name)
+        # print(f"Audio file saved in {file_path}")
     except Exception as e:
         raise Exception(f"Error converting URL to audio: {e}") from e
 
