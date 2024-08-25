@@ -7,7 +7,7 @@ interface URLFormProps {
 
 // Constants for element heights
 const DESKTOP_HEIGHT = '50px';
-const MOBILE_HEIGHT = '36px';
+const MOBILE_HEIGHT = '40px';
 
 const URLForm: React.FC<URLFormProps> = ({ onSubmit }) => {
     const [url, setUrl] = useState<string>('');
@@ -30,7 +30,7 @@ const URLForm: React.FC<URLFormProps> = ({ onSubmit }) => {
                     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
                 }}
             >
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <TextField
                         fullWidth
                         variant="outlined"
@@ -38,9 +38,22 @@ const URLForm: React.FC<URLFormProps> = ({ onSubmit }) => {
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
                         placeholder="https://example.com/article"
+                        InputLabelProps={{
+                            shrink: true,
+                            sx: {
+                                transform: 'translate(14px, -6px) scale(0.75)',
+                                background: 'white',
+                                padding: '0 4px',
+                            }
+                        }}
                         sx={{
                             '& .MuiOutlinedInput-root': {
                                 height: elementHeight,
+                                '& input': {
+                                    height: elementHeight,
+                                    boxSizing: 'border-box',
+                                    padding: '0 14px',
+                                },
                                 '& fieldset': {
                                     borderColor: 'rgba(25, 118, 210, 0.3)',
                                 },
