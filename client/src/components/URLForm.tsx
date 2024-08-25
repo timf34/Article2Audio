@@ -21,7 +21,7 @@ const URLForm: React.FC<URLFormProps> = ({ onSubmit }) => {
                 variant="outlined"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="Enter URL"
+                placeholder="Enter article URL"
                 required
                 fullWidth
                 size="small"
