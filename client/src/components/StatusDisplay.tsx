@@ -40,7 +40,6 @@ const StatusDisplay: React.FC<StatusDisplayProps> = ({ status, estimatedTime }) 
                     borderRadius: '12px',
                     boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .1)',
                     maxWidth: '600px',
-                    width: '100%',
                     margin: '0 auto',
                 }}
             >
