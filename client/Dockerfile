@@ -1,7 +1,7 @@
 # client/Dockerfile
 
 # Stage 1: Build the React app
-FROM node:14 AS build
+FROM node:16 AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install

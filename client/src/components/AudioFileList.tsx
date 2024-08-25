@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { getAudioFiles, downloadFile } from '../api';
 
-const AudioFileList = () => {
-  const [audioFiles, setAudioFiles] = useState([]);
+interface AudioFile {
+  id: string;
+  file_name: string;
+  creation_date: string;
+}
+
+const AudioFileList: React.FC = () => {
+  const [audioFiles, setAudioFiles] = useState<AudioFile[]>([]);
 
   useEffect(() => {
     const fetchAudioFiles = async () => {
@@ -17,7 +23,7 @@ const AudioFileList = () => {
     fetchAudioFiles();
   }, []);
 
-  const handleDownload = async (fileId) => {
+  const handleDownload = async (fileId: string) => {
     try {
       await downloadFile(fileId);
     } catch (error) {

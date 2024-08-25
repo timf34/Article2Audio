@@ -1,14 +1,13 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import URLForm from './components/URLForm';
 import StatusDisplay from './components/StatusDisplay';
 import AudioFileList from './components/AudioFileList';
-import { processArticle, getStatus, downloadFile } from './api';
+import { processArticle, getStatus } from './api';
 
-const App = () => {
-  const [taskId, setTaskId] = useState(null);
-  const [status, setStatus] = useState('');
-  const [estimatedTime, setEstimatedTime] = useState(0);
+const App: React.FC = () => {
+  const [taskId, setTaskId] = useState<string | null>(null);
+  const [status, setStatus] = useState<string>('');
+  const [estimatedTime, setEstimatedTime] = useState<number>(0);
 
   useEffect(() => {
     if (taskId) {
@@ -28,7 +27,7 @@ const App = () => {
     }
   }, [taskId]);
 
-  const handleSubmit = async (url) => {
+  const handleSubmit = async (url: string) => {
     setStatus('Submitting...');
     try {
       const response = await processArticle(url);

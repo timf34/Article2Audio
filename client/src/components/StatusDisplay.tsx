@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const StatusDisplay = ({ status, estimatedTime,}) => {
-  const [displayTime, setDisplayTime] = useState(estimatedTime);
+interface StatusDisplayProps {
+  status: string;
+  estimatedTime: number;
+}
+
+const StatusDisplay: React.FC<StatusDisplayProps> = ({ status, estimatedTime }) => {
+  const [displayTime, setDisplayTime] = useState<number>(estimatedTime);
+
 
   useEffect(() => {
     if ((status === 'Creating audio file...') && estimatedTime > 0) {

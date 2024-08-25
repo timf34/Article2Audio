@@ -1,10 +1,12 @@
-// src/components/URLForm.js
 import React, { useState } from 'react';
 
-const URLForm = ({ onSubmit }) => {
-  const [url, setUrl] = useState('');
+interface URLFormProps {
+    onSubmit: (url: string) => void;
+}
 
-  const handleSubmit = (e) => {
+const URLForm: React.FC<URLFormProps> = ({ onSubmit }) => {
+    const [url, setUrl] = useState<string>('');
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(url);
   };
