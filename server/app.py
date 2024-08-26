@@ -59,8 +59,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 async def verify_token(request: TokenVerificationRequest):
     try:
         logging.info(f"Verifying token: {request.token[:10]}...")  # Log first 10 characters of token
-        print(f"Verifying token: {request.token[:10]}...")  # Log first 10 characters of token
-        idinfo = id_token.verify_oauth2_token(request.token, requests.Request(), GOOGLE_CLIENT_ID)
+
+        # Add a 5-second leeway
+        idinfo = id_token.verify_oauth2_token(
+            request.token,
+            requests.Request(),
+            GOOGLE_CLIENT_ID,
+            clock_skew_in_seconds=5
+        )
+
         logging.info(f"Token verified. User info: {idinfo}")
         userid = idinfo['sub']
         return {"userid": userid, "email": idinfo.get("email")}
