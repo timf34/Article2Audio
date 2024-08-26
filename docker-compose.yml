@@ -9,10 +9,6 @@ services:
       - "3000:80"
 
   backend:
-    deploy:
-      resources:
-        limits:
-          memory: 1g
     build:
       context: ./server
       dockerfile: Dockerfile
