@@ -13,3 +13,7 @@ class URLResponse(BaseModel):
 class StatusResponse(BaseModel):
     status: str
     error: str = None
+
+
+class TokenVerificationRequest(BaseModel):
+    token: str

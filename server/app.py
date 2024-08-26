@@ -9,6 +9,8 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from models import URLRequest, URLResponse, StatusResponse
 from audio import generate_audio_task
+
+from models import TokenVerificationRequest
 from readers import substack, articles
 from utils import estimate_processing_time, get_domain
 
@@ -54,12 +56,17 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 @app.post("/api/verify_token")
-async def verify_token(token: str):
+async def verify_token(request: TokenVerificationRequest):
     try:
-        idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
-        return idinfo
-    except ValueError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        logging.info(f"Verifying token: {request.token[:10]}...")  # Log first 10 characters of token
+        print(f"Verifying token: {request.token[:10]}...")  # Log first 10 characters of token
+        idinfo = id_token.verify_oauth2_token(request.token, requests.Request(), GOOGLE_CLIENT_ID)
+        logging.info(f"Token verified. User info: {idinfo}")
+        userid = idinfo['sub']
+        return {"userid": userid, "email": idinfo.get("email")}
+    except ValueError as e:
+        logging.error(f"Token verification failed: {str(e)}")
+        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
 @app.post("/api/process_article", response_model=URLResponse)
 async def process_article(request: URLRequest, background_tasks: BackgroundTasks):

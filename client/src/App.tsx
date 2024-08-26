@@ -39,12 +39,21 @@ const App: React.FC = () => {
   }, [taskId]);
 
   const handleLogin = async (credentialResponse: any) => {
+    console.log("Credential Response:", credentialResponse);
     try {
-      const response = await verifyToken(credentialResponse.credential);
-      setUser(response);
-      localStorage.setItem('token', credentialResponse.credential);
+      if (credentialResponse.credential) {
+        const response = await verifyToken(credentialResponse.credential);
+        console.log("Verify Token Response:", response);
+        setUser(response);
+        localStorage.setItem('token', credentialResponse.credential);
+      } else {
+        console.error("No credential in the response");
+      }
     } catch (error) {
       console.error("Error verifying token:", error);
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
     }
   };
 
@@ -79,8 +88,14 @@ const App: React.FC = () => {
               </>
           ) : (
               <GoogleLogin
-                  onSuccess={handleLogin}
-                  onError={() => console.log('Login Failed')}
+                  onSuccess={credentialResponse => {
+                    console.warn(credentialResponse);
+                    handleLogin(credentialResponse);
+                  }}
+                  onError={() => {
+                    console.warn('Login Failed');
+                  }}
+                  useOneTap
               />
           )}
         </div>
