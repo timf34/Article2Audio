@@ -1,9 +1,12 @@
 import logging
 import os
 import uuid
-from fastapi import FastAPI, BackgroundTasks, HTTPException, Response, Request
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Response, Request,  Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.security import OAuth2PasswordBearer
+from google.oauth2 import id_token
+from google.auth.transport import requests
 from models import URLRequest, URLResponse, StatusResponse
 from audio import generate_audio_task
 from readers import substack, articles
@@ -13,6 +16,10 @@ from database import DatabaseManager
 from rss_manager import get_rss_content
 
 app = FastAPI()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+GOOGLE_CLIENT_ID = "213491127239-lssh5snpejuob32apcpjecnvf1i7ceng.apps.googleusercontent.com"
 
 # Add CORS middleware
 app.add_middleware(
@@ -38,6 +45,21 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 tasks = {}
 
 db_manager = DatabaseManager()
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+        return idinfo
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+@app.post("/api/verify_token")
+async def verify_token(token: str):
+    try:
+        idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+        return idinfo
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 @app.post("/api/process_article", response_model=URLResponse)
 async def process_article(request: URLRequest, background_tasks: BackgroundTasks):

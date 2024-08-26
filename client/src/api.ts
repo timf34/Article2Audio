@@ -35,3 +35,18 @@ export const getAudioFiles = async (): Promise<AudioFile[]> => {
   const response = await axios.get(`${API_URL}/audio_files`);
   return response.data;
 };
+
+
+export const verifyToken = async (token: string) => {
+  const response = await fetch(`${API_URL}/verify_token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ token }),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to verify token');
+  }
+  return response.json();
+};
