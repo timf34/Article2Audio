@@ -1,6 +1,11 @@
 /.idea
 /__pycache__
 *.pyc
+*.mp3
 
 
 /learning
+
+TODO.md
+production.md
+
