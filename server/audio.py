@@ -26,8 +26,6 @@ from memory_profiler import profile
 openai_client = OpenAI(api_key=OPENAI_KEY)
 db_manager = DatabaseManager()
 
-tracemalloc.start()
-
 
 def log_memory_usage(stage):
     process = psutil.Process(os.getpid())
@@ -41,20 +39,8 @@ def generate_audio_task(text: str, article_name: str, author_name: str, tasks: D
             temp_file_path = "../speech.mp3"
         else:
 
-            # Snapshot before generating audio
-            snapshot_before = tracemalloc.take_snapshot()
-
             audio_segments = generate_audio_in_parallel(text)
             merged_audio = merge_audio_segments(audio_segments)
-
-            # Snapshot after generating audio
-            snapshot_after = tracemalloc.take_snapshot()
-
-            # Compare memory snapshots
-            top_stats = snapshot_after.compare_to(snapshot_before, 'lineno')
-            logging.info("[Memory Stats] Top memory usage changes:")
-            for stat in top_stats[:10]:  # Log top 10 memory changes
-                logging.info(stat)
 
             print(f"article_name: {article_name}")
             print(f"author_name: {author_name}")
@@ -114,9 +100,6 @@ def generate_audio_sequentially(text: str) -> List[AudioSegment]:
 
 @profile
 def generate_audio_in_parallel(text: str) -> List[AudioSegment]:
-    # Snapshot before generating audio in parallel
-    snapshot_before_parallel = tracemalloc.take_snapshot()
-
     chunks = split_text_into_chunks(text, max_length=2048)   # TODO: be smarter about splitting the text, it affects the sound where its split, so should split at the end of a sentence or paragraph or such.
     audio_segments = [None] * len(chunks)
     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -131,15 +114,6 @@ def generate_audio_in_parallel(text: str) -> List[AudioSegment]:
                 # Explicitly delete the future and enforce garbage collection
                 del future
                 gc.collect()  # Ensure garbage collection after each chunk
-
-    # Snapshot after generating audio in parallel
-    snapshot_after_parallel = tracemalloc.take_snapshot()
-
-    # Compare memory snapshots
-    top_stats_parallel = snapshot_after_parallel.compare_to(snapshot_before_parallel, 'lineno')
-    logging.info("[Memory Stats - Parallel Generation] Top memory usage changes:")
-    for stat in top_stats_parallel[:10]:  # Log top 10 memory changes
-        logging.info(stat)
 
     return audio_segments
 

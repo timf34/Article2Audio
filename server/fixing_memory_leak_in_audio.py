@@ -7,7 +7,19 @@ import tracemalloc
 import psutil
 from server.audio import generate_audio_task
 
-PRACTICE_URL = "https://www.paulgraham.com/getideas.html"
+PRACTICE_TEXT = """
+The way to get new ideas is to notice anomalies: what seems strange, or missing, or broken? You can see anomalies in everyday life (much of standup comedy is based on this), but the best place to look for them is at the frontiers of knowledge.
+
+Knowledge grows fractally. From a distance its edges look smooth, but when you learn enough to get close to one, you'll notice it's full of gaps. These gaps will seem obvious; it will seem inexplicable that no one has tried x or wondered about y. In the best case, exploring such gaps yields whole new fractal buds.
+
+The way to get new ideas is to notice anomalies: what seems strange, or missing, or broken? You can see anomalies in everyday life (much of standup comedy is based on this), but the best place to look for them is at the frontiers of knowledge.
+
+Knowledge grows fractally. From a distance its edges look smooth, but when you learn enough to get close to one, you'll notice it's full of gaps. These gaps will seem obvious; it will seem inexplicable that no one has tried x or wondered about y. In the best case, exploring such gaps yields whole new fractal buds.
+
+The way to get new ideas is to notice anomalies: what seems strange, or missing, or broken? You can see anomalies in everyday life (much of standup comedy is based on this), but the best place to look for them is at the frontiers of knowledge.
+
+Knowledge grows fractally. From a distance its edges look smooth, but when you learn enough to get close to one, you'll notice it's full of gaps. These gaps will seem obvious; it will seem inexplicable that no one has tried x or wondered about y. In the best case, exploring such gaps yields whole new fractal buds.
+"""
 
 
 def print_memory_usage():
@@ -16,18 +28,11 @@ def print_memory_usage():
     memory_info = process.memory_info()
     print(f"Current memory usage: {memory_info.rss / (1024 * 1024):.2f} MB")
 
-    # Get memory usage from tracemalloc
-    snapshot = tracemalloc.take_snapshot()
-    top_stats = snapshot.statistics('lineno')
-    print("\nTop 10 memory allocations:")
-    for stat in top_stats[:10]:
-        print(stat)
-
 
 def main():
     while True:
         input("Press Enter to generate audio...")
-        generate_audio_task(PRACTICE_URL, "test_article", "test_author", {}, "test_task_id")
+        generate_audio_task(PRACTICE_TEXT, "test_article", "test_author", {}, "test_task_id")
         print("Processing complete. Checking memory usage...")
         print_memory_usage()
 
