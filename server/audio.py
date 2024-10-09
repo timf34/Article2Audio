@@ -5,7 +5,6 @@ import os
 import psutil 
 import tempfile
 import time
-import tracemalloc
 
 from io import BytesIO
 from mutagen.easyid3 import EasyID3
@@ -32,6 +31,13 @@ def log_memory_usage(stage):
     logging.info(f"[{stage}] Memory usage: {process.memory_info().rss / 1024 ** 2} MB")
 
 
+def print_memory_usage():
+    # Get current memory usage
+    process = psutil.Process()
+    memory_info = process.memory_info()
+    print(f"Current memory usage: {memory_info.rss / (1024 * 1024):.2f} MB")
+
+
 @profile
 def generate_audio_task(text: str, article_name: str, author_name: str, tasks: Dict[str, str], task_id: str) -> None:
     try:
@@ -53,6 +59,7 @@ def generate_audio_task(text: str, article_name: str, author_name: str, tasks: D
             tasks[task_id] = {'status': 'completed', 'file_path': save_path, 'file_name': article_name}
             logging.info(f"Audio file saved in {save_path}")
             del save_path
+            print_memory_usage()
     except Exception as e:
         logging.error(f"Failed to generate audio: {e}")
         tasks[task_id] = {'status': 'failed', 'detail': str(e)}

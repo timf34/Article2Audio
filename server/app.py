@@ -1,5 +1,6 @@
 import logging
 import os
+import psutil
 import uuid
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Response, Request,  Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -47,6 +48,13 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 tasks = {}
 
 db_manager = DatabaseManager()
+
+def print_memory_usage():
+    # Get current memory usage
+    process = psutil.Process()
+    memory_info = process.memory_info()
+    print(f"Current memory usage: {memory_info.rss / (1024 * 1024):.2f} MB")
+
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
@@ -116,6 +124,7 @@ async def process_article(request: URLRequest, background_tasks: BackgroundTasks
 async def get_status(task_id: str):
     print(f"Tasks: {tasks}")
     print(f"Checking status for task_id: {task_id}")
+    print_memory_usage()
     task = tasks.get(task_id)
     if not task:
         print(f"Task not found for task_id: {task_id}")
