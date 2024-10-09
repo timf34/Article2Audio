@@ -36,7 +36,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                         </Typography>
                     </Box>
 
-                    <Box sx={{ mb: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
                         <GoogleLogin
                             onSuccess={onLogin}
                             onError={() => console.log('Login Failed')}
