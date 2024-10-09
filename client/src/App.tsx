@@ -1,10 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ThemeProvider, createTheme, CssBaseline, Container, Box } from '@mui/material';
 import URLForm from './components/URLForm';
 import StatusDisplay from './components/StatusDisplay';
 import AudioFileList from './components/AudioFileList';
 import Header from './components/Header';
-import { processArticle, getStatus, verifyToken} from './api';
+import LoginPage from './components/LoginPage';
+import { processArticle, getStatus, verifyToken } from './api';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#3a7bd5',
+    },
+    secondary: {
+      main: '#00d2ff',
+    },
+  },
+});
 
 const App: React.FC = () => {
   const [taskId, setTaskId] = useState<string | null>(null);
@@ -13,7 +26,6 @@ const App: React.FC = () => {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    // Check if there's a token in localStorage
     const token = localStorage.getItem('token');
     if (token) {
       verifyToken(token).then(setUser).catch(() => localStorage.removeItem('token'));
@@ -39,11 +51,9 @@ const App: React.FC = () => {
   }, [taskId]);
 
   const handleLogin = async (credentialResponse: any) => {
-    console.log("Credential Response:", credentialResponse);
     try {
       if (credentialResponse.credential) {
         const response = await verifyToken(credentialResponse.credential);
-        console.log("Verify Token Response:", response);
         setUser(response);
         localStorage.setItem('token', credentialResponse.credential);
       } else {
@@ -51,9 +61,6 @@ const App: React.FC = () => {
       }
     } catch (error) {
       console.error("Error verifying token:", error);
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
     }
   };
 
@@ -77,28 +84,21 @@ const App: React.FC = () => {
 
   return (
       <GoogleOAuthProvider clientId="213491127239-lssh5snpejuob32apcpjecnvf1i7ceng.apps.googleusercontent.com">
-        <div>
-          <Header />
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
           {user ? (
-              <>
-                <button onClick={handleLogout}>Logout</button>
-                <URLForm onSubmit={handleSubmit} />
-                <StatusDisplay status={status} estimatedTime={estimatedTime}/>
-                <AudioFileList/>
-              </>
+              <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+                <Header />
+                <Container maxWidth="md" sx={{ pt: 4, pb: 4 }}>
+                  <URLForm onSubmit={handleSubmit} />
+                  <StatusDisplay status={status} estimatedTime={estimatedTime} />
+                  <AudioFileList />
+                </Container>
+              </Box>
           ) : (
-              <GoogleLogin
-                  onSuccess={credentialResponse => {
-                    console.warn(credentialResponse);
-                    handleLogin(credentialResponse);
-                  }}
-                  onError={() => {
-                    console.warn('Login Failed');
-                  }}
-                  useOneTap
-              />
+              <LoginPage onLogin={handleLogin} />
           )}
-        </div>
+        </ThemeProvider>
       </GoogleOAuthProvider>
   );
 };
