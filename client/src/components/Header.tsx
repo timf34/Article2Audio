@@ -1,8 +1,11 @@
-// src/components/Header.tsx
 import React from 'react';
-import { Typography, Box, Container } from '@mui/material';
+import { Typography, Box, Container, Button } from '@mui/material';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+    onSignOut: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onSignOut }) => {
     return (
         <Box
             sx={{
@@ -12,24 +15,36 @@ const Header: React.FC = () => {
                 boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
             }}
         >
-            <Container maxWidth="sm">
-                <Typography variant="h4" component="h1" sx={{
-                    fontWeight: 'bold',
-                    color: 'white',
-                    textAlign: 'center',
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
-                }}>
-                    Article to Audio
-                </Typography>
-                <Typography variant="subtitle2" sx={{
-                    color: 'rgba(255,255,255,0.9)',
-                    textAlign: 'center',
-                    mt: 1,
-                    fontSize: '0.9rem',
-                    letterSpacing: '0.5px',
-                }}>
-                    URL → audio file → podcast app!
-                </Typography>
+            <Container maxWidth="md" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{ flex: 1 }}>
+                    <Typography variant="h4" component="h1" sx={{
+                        fontWeight: 'bold',
+                        color: 'white',
+                        textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                    }}>
+                        Article to Audio
+                    </Typography>
+                    <Typography variant="subtitle2" sx={{
+                        color: 'rgba(255,255,255,0.9)',
+                        mt: 1,
+                        fontSize: '0.9rem',
+                        letterSpacing: '0.5px',
+                    }}>
+                        URL → audio file → podcast app!
+                    </Typography>
+                </Box>
+                <Button
+                    color="inherit"
+                    onClick={onSignOut}
+                    sx={{
+                        backgroundColor: 'rgba(255,255,255,0.1)',
+                        '&:hover': {
+                            backgroundColor: 'rgba(255,255,255,0.2)',
+                        },
+                    }}
+                >
+                    Sign Out
+                </Button>
             </Container>
         </Box>
     );

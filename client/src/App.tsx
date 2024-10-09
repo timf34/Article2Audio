@@ -88,7 +88,7 @@ const App: React.FC = () => {
           <CssBaseline />
           {user ? (
               <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
-                <Header />
+                <Header onSignOut={handleLogout} />
                 <Container maxWidth="md" sx={{ pt: 4, pb: 4 }}>
                   <URLForm onSubmit={handleSubmit} />
                   <StatusDisplay status={status} estimatedTime={estimatedTime} />
