@@ -75,19 +75,22 @@ async def get_current_user(request: Request):
 @app.post("/api/verify_token")
 async def verify_token(request: TokenVerificationRequest):
     try:
-        logging.info(f"Verifying token: {request.token[:10]}...")  # Log first 10 characters of token
-
-        # Add a 5-second leeway
+        logging.info(f"Verifying token: {request.token[:10]}...")
         idinfo = id_token.verify_oauth2_token(
             request.token,
             requests.Request(),
             GOOGLE_CLIENT_ID,
-            clock_skew_in_seconds=25
+            clock_skew_in_seconds=15
         )
 
         logging.info(f"Token verified. User info: {idinfo}")
         userid = idinfo['sub']
-        return {"userid": userid, "email": idinfo.get("email")}
+        name = idinfo.get("name")
+        email = idinfo.get("email")
+
+        db_manager.get_or_create_user(userid, name=name, email=email)
+
+        return {"userid": userid, "email": email}
     except ValueError as e:
         logging.error(f"Token verification failed: {str(e)}")
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
