@@ -1,14 +1,15 @@
-# rss_manager.py
 import os
 from lxml import etree
 from datetime import datetime
 import random
+
 
 def get_rss_file_path(user_id):
     rss_dir = os.path.join('rss_feeds')
     if not os.path.exists(rss_dir):
         os.makedirs(rss_dir)
     return os.path.join(rss_dir, f'rss_{user_id}.xml')
+
 
 def update_rss_feed(
         title: str,
@@ -17,13 +18,14 @@ def update_rss_feed(
         file_url: str,
         file_size: str,
         duration: str,
-        user_id: str
+        user_id: str,
+        given_name: str
 ) -> None:
 
     rss_file_path = get_rss_file_path(user_id)
     if not os.path.exists(rss_file_path):
         print("RSS file not found... Creating new initial RSS feed")
-        create_initial_rss_feed(user_id)
+        create_initial_rss_feed(user_id, given_name)
 
     try:
         tree = etree.parse(rss_file_path)
@@ -54,12 +56,12 @@ def update_rss_feed(
         print(f"Error updating RSS feed: {e}")
 
 
-def create_initial_rss_feed(user_id):
+def create_initial_rss_feed(user_id, given_name):
     rss_file_path = get_rss_file_path(user_id)
     # Optionally, retrieve user info from the database
     # For simplicity, we can just use placeholders
     # TODO: fix this going forward!
-    user_name = "User's Articles"
+    user_name = f"{given_name}'s Articles"
     user_email = "user@example.com"
 
     nsmap = {
@@ -86,6 +88,7 @@ def create_initial_rss_feed(user_id):
 
     tree = etree.ElementTree(root)
     tree.write(rss_file_path, xml_declaration=True, encoding="UTF-8", pretty_print=True)
+
 
 def get_rss_content(user_id):
     rss_file_path = get_rss_file_path(user_id)

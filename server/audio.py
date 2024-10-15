@@ -45,7 +45,8 @@ def generate_audio_task(
         author_name: str,
         tasks: Dict[str, str],
         task_id: str,
-        user_id: str
+        user_id: str,
+        given_name: str
 ) -> None:
     try:
         if DEVELOPMENT:
@@ -60,7 +61,7 @@ def generate_audio_task(
             print(f"tasks: {tasks}")
             print(f"task_id: {task_id}")
 
-            save_path = save_audio_file(merged_audio, article_name, author_name, user_id)
+            save_path = save_audio_file(merged_audio, article_name, author_name, user_id, given_name)
             del audio_segments
             del merged_audio
             tasks[task_id] = {'status': 'completed', 'file_path': save_path, 'file_name': article_name}
@@ -75,7 +76,7 @@ def generate_audio_task(
 def create_audio_file(text: str, article_name: str, author_name: str) -> str:
     audio_segments = generate_audio_in_parallel(text)
     merged_audio = merge_audio_segments(audio_segments)
-    file_path = save_audio_file(merged_audio, article_name, author_name)
+    file_path = save_audio_file(merged_audio, article_name, author_name)  # TODO: this is getting called twice!
     return file_path
 
 
@@ -164,7 +165,7 @@ def save_audio_to_temp_file(merged_audio: AudioSegment) -> str:
         return temp_file.name
 
 
-def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: str, user_id: str) -> str:
+def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: str, user_id: str, given_name: str=None) -> str:
     try:
         output_dir = Path(MP3_DATA_DIR_PATH)
         if not output_dir.exists():
@@ -192,7 +193,9 @@ def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: 
 
         db_manager.add_audio_file(file_name, user_id)
 
-        if upload_file_to_s3(file_path.as_posix(), file_name, user_id):
+        # TODO: I made given_name optional for when we save the file locally via create_audio_file... not sure if its
+        #  the best decision. Will come back to this.
+        if upload_file_to_s3(file_path.as_posix(), file_name, user_id) and given_name != None:
             print(f"Successfully uploaded {file_name} to S3")
 
             file_url = f"{S3_BUCKET_URL}/{user_id}/{file_name.replace(' ', '%20')}"
@@ -204,7 +207,8 @@ def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: 
                 file_url=file_url,
                 file_size=str(os.path.getsize(file_path)),
                 duration=str(merged_audio.duration_seconds),  # NOTE: I think this is supposed to be in H:MM:SS format
-                user_id=user_id
+                user_id=user_id,
+                given_name=given_name
             )
 
         else:

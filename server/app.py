@@ -129,8 +129,11 @@ async def process_article(
         tasks[task_id] = {'status': 'Creating audio file...', 'article_name': article_name, 'author_name': author_name}
 
         user_id = current_user['sub']
+        given_name = current_user['given_name']
 
-        background_tasks.add_task(generate_audio_task, text, article_name, author_name, tasks, task_id, user_id)
+        background_tasks.add_task(
+            generate_audio_task, text, article_name, author_name, tasks, task_id, user_id, given_name
+        )
 
         logging.info(f"Returning response with estimated_time: {estimated_time} and task_id: {task_id}")
         return URLResponse(estimated_time=estimated_time, task_id=task_id)
