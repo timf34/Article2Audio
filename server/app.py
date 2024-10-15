@@ -2,7 +2,7 @@ import logging
 import os
 import psutil
 import uuid
-from fastapi import FastAPI, BackgroundTasks, HTTPException, Response, Request, Depends
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Response, Request, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordBearer
@@ -56,11 +56,19 @@ def print_memory_usage():
     print(f"Current memory usage: {memory_info.rss / (1024 * 1024):.2f} MB")
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(request: Request):
+    authorization: str = request.headers.get('Authorization')
+    logging.info(f"Authorization header: {authorization}")
+    if authorization is None:
+        raise HTTPException(status_code=401, detail="Missing Authorization header")
+    if not authorization.startswith('Bearer '):
+        raise HTTPException(status_code=401, detail="Invalid Authorization header format")
+    token = authorization[len('Bearer '):]
     try:
-        idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+        idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID, clock_skew_in_seconds=15)
         return idinfo
-    except ValueError:
+    except ValueError as e:
+        logging.error(f"Token verification failed: {str(e)}")
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
@@ -74,7 +82,7 @@ async def verify_token(request: TokenVerificationRequest):
             request.token,
             requests.Request(),
             GOOGLE_CLIENT_ID,
-            clock_skew_in_seconds=15
+            clock_skew_in_seconds=25
         )
 
         logging.info(f"Token verified. User info: {idinfo}")
@@ -158,7 +166,7 @@ async def download_file(file_id: int, current_user: dict = Depends(get_current_u
 
 @app.get("/api/audio_files")
 async def list_audio_files(current_user: dict = Depends(get_current_user)):
-    print(current_user)
+    print("current user /api/audio_files: ", current_user)
     user_id = current_user['sub']
     print("user id get audio files", user_id)
     files = db_manager.list_audio_files(user_id)
