@@ -1,290 +1,49 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-	<channel>
-		<title>Tim's Articles</title>
-		<link>https://article2audio.com</link>
-		<language>en-us</language>
-		<copyright>© 2024 Tim Farrelly</copyright>
-		<itunes:author>Tim Farrelly</itunes:author>
-		<description>Tim's articles</description>
-		<itunes:image href="https://article2audio.com/podcast_cover.jpg"/>
-		<itunes:category text="Technology"/>
-		<itunes:explicit>false</itunes:explicit>
-		<atom:link href="https://article2audio.com/rss.xml" rel="self" type="application/rss+xml"/>
-		<itunes:owner>
-			<itunes:name>Tim Farrelly</itunes:name>
-			<itunes:email>timf34@gmail.com</itunes:email>
-		</itunes:owner>
-		<item>
-			<title>The Reddits by Paul Graham</title>
-			<itunes:author>Tim</itunes:author>
-			<description>Description of this episode goes here.</description>
-			<pubDate>Tue, 01 Jun 2023 00:00:00 GMT</pubDate>
-			<enclosure url="https://article2audio.s3.amazonaws.com/The%20Reddits%20by%20Paul%20Graham.mp3" length="12345678" type="audio/mpeg"/>
-			<guid isPermaLink="false">make-this-programmatically-unique</guid>
-			<itunes:duration>00:06:16</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-		</item>
-		<item>
-			<title>Do Elephants Have Souls by The New Atlantis</title>
-			<itunes:author>Tim</itunes:author>
-			<description>Podcast description...</description>
-			<pubDate>Tue, 01 Jun 2023 00:00:00 GMT</pubDate>
-			<enclosure url="https://article2audio.s3.amazonaws.com/Do%20Elephants%20Have%20Souls%20by%20The+New%20Atlantis.mp3" length="12345678" type="audio/mpeg"/>
-			<guid isPermaLink="false">unique-identifier-for-this-episodex</guid>
-			<itunes:duration>01:44:02</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-		</item>
-		<!-- Add more <item> elements for each episode -->
-		<item>
-			<title>how to make love</title>
-			<description>Audio version of 'how to make love' by gabi abrão</description>
-			<pubDate>Mon, 22 Jul 2024 01:34:55 +0000</pubDate>
-			<guid isPermaLink="false">20240722013455550538-3757</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/how%20to%20make%20love%20by%20gabi%20abrão.mp3" length="43295" type="audio/mpeg"/>
-			<itunes:duration>10.44</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>gabi abrão</itunes:author>
-		</item>
-		<item>
-			<title>Why Does Ozempic Cure All Diseases</title>
-			<description>Audio version of 'Why Does Ozempic Cure All Diseases' by Scott Alexander</description>
-			<pubDate>Thu, 22 Aug 2024 02:20:00 +0000</pubDate>
-			<guid isPermaLink="false">20240822022000895831-5643</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/Why%20Does%20Ozempic%20Cure%20All%20Diseases%20by%20Scott%20Alexander.mp3" length="4974388" type="audio/mpeg"/>
-			<itunes:duration>1241.976</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>Scott Alexander</itunes:author>
-		</item>
-		<item>
-			<title>In The Long Run Were All Dad</title>
-			<description>Audio version of 'In The Long Run Were All Dad' by Scott Alexander</description>
-			<pubDate>Thu, 22 Aug 2024 02:24:27 +0000</pubDate>
-			<guid isPermaLink="false">20240822022427979962-1824</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/In%20The%20Long%20Run%20Were%20All%20Dad%20by%20Scott%20Alexander.mp3" length="5193865" type="audio/mpeg"/>
-			<itunes:duration>1296.792</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>Scott Alexander</itunes:author>
-		</item>
-		<item>
-			<title>Review museums of the future Dubai and Tokyo</title>
-			<description>Audio version of 'Review museums of the future Dubai and Tokyo' by unknown</description>
-			<pubDate>Fri, 23 Aug 2024 19:36:25 +0000</pubDate>
-			<guid isPermaLink="false">20240823193625705864-7980</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/Review%20museums%20of%20the%20future%20Dubai%20and%20Tokyo%20by%20unknown.mp3" length="14586" type="audio/mpeg"/>
-			<itunes:duration>3.264</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>unknown</itunes:author>
-		</item>
-		<item>
-			<title>actually everyones life is weird</title>
-			<description>Audio version of 'actually everyones life is weird' by Ava</description>
-			<pubDate>Fri, 23 Aug 2024 19:37:39 +0000</pubDate>
-			<guid isPermaLink="false">20240823193739024880-5111</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/actually%20everyones%20life%20is%20weird%20by%20Ava.mp3" length="1584298" type="audio/mpeg"/>
-			<itunes:duration>395.304</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>Ava</itunes:author>
-		</item>
-		<item>
-			<title>its okay to care too much</title>
-			<description>Audio version of 'its okay to care too much' by Ava</description>
-			<pubDate>Fri, 23 Aug 2024 19:39:12 +0000</pubDate>
-			<guid isPermaLink="false">20240823193912457725-4053</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/its%20okay%20to%20care%20too%20much%20by%20Ava.mp3" length="1459270" type="audio/mpeg"/>
-			<itunes:duration>364.08</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>Ava</itunes:author>
-		</item>
-		<item>
-			<title>how to make love</title>
-			<description>Audio version of 'how to make love' by gabi abrão</description>
-			<pubDate>Fri, 23 Aug 2024 19:39:45 +0000</pubDate>
-			<guid isPermaLink="false">20240823193945302175-5949</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/how%20to%20make%20love%20by%20gabi%20abrão.mp3" length="43006" type="audio/mpeg"/>
-			<itunes:duration>10.368</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>gabi abrão</itunes:author>
-		</item>
-		<item>
-			<title>poems about a man i love and a man i didnt</title>
-			<description>Audio version of 'poems about a man i love and a man i didnt' by gabi abrão</description>
-			<pubDate>Fri, 23 Aug 2024 19:40:49 +0000</pubDate>
-			<guid isPermaLink="false">20240823194049211080-3165</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/poems%20about%20a%20man%20i%20love%20and%20a%20man%20i%20didnt%20by%20gabi%20abrão.mp3" length="485747" type="audio/mpeg"/>
-			<itunes:duration>120.936</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>gabi abrão</itunes:author>
-		</item>
-		<item>
-			<title>poems about a man i love and a man i didnt</title>
-			<description>Audio version of 'poems about a man i love and a man i didnt' by gabi abrão</description>
-			<pubDate>Fri, 23 Aug 2024 19:41:53 +0000</pubDate>
-			<guid isPermaLink="false">20240823194153777841-4999</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/poems%20about%20a%20man%20i%20love%20and%20a%20man%20i%20didnt%20by%20gabi%20abrão.mp3" length="488341" type="audio/mpeg"/>
-			<itunes:duration>121.584</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>gabi abrão</itunes:author>
-		</item>
-		<item>
-			<title>What You Want to Want</title>
-			<description>Audio version of 'What You Want to Want' by Paul Graham</description>
-			<pubDate>Fri, 23 Aug 2024 21:41:29 +0000</pubDate>
-			<guid isPermaLink="false">20240823214129006210-9075</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/What%20You%20Want%20to%20Want%20by%20Paul%20Graham.mp3" length="701366" type="audio/mpeg"/>
-			<itunes:duration>174.792</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>Paul Graham</itunes:author>
-		</item>
-		<item>
-			<title>What You Want to Want</title>
-			<description>Audio version of 'What You Want to Want' by Paul Graham</description>
-			<pubDate>Fri, 23 Aug 2024 21:42:04 +0000</pubDate>
-			<guid isPermaLink="false">20240823214204112816-1224</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/What%20You%20Want%20to%20Want%20by%20Paul%20Graham.mp3" length="701078" type="audio/mpeg"/>
-			<itunes:duration>174.72</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>Paul Graham</itunes:author>
-		</item>
-		<item>
-			<title>What You Want to Want</title>
-			<description>Audio version of 'What You Want to Want' by Paul Graham</description>
-			<pubDate>Fri, 23 Aug 2024 21:42:49 +0000</pubDate>
-			<guid isPermaLink="false">20240823214249530721-7835</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/What%20You%20Want%20to%20Want%20by%20Paul%20Graham.mp3" length="689835" type="audio/mpeg"/>
-			<itunes:duration>171.912</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>Paul Graham</itunes:author>
-		</item>
-		<item>
-			<title>An NFT That Saves Lives</title>
-			<description>Audio version of 'An NFT That Saves Lives' by Paul Graham</description>
-			<pubDate>Fri, 23 Aug 2024 21:43:32 +0000</pubDate>
-			<guid isPermaLink="false">20240823214332208365-5894</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/An%20NFT%20That%20Saves%20Lives%20by%20Paul%20Graham.mp3" length="466029" type="audio/mpeg"/>
-			<itunes:duration>116.016</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>Paul Graham</itunes:author>
-		</item>
-		<item>
-			<title>How bad is alcohol  Otherwise</title>
-			<description>Audio version of 'How bad is alcohol  Otherwise' by julia.d.wise</description>
-			<pubDate>Fri, 23 Aug 2024 22:01:06 +0000</pubDate>
-			<guid isPermaLink="false">20240823220106621369-6022</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/How%20bad%20is%20alcohol%20%20Otherwise%20by%20julia.d.wise.mp3" length="2836436" type="audio/mpeg"/>
-			<itunes:duration>708.024</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>julia.d.wise</itunes:author>
-		</item>
-		<item>
-			<title>how to make love</title>
-			<description>Audio version of 'how to make love' by gabi abrão</description>
-			<pubDate>Sun, 25 Aug 2024 22:28:55 +0000</pubDate>
-			<guid isPermaLink="false">20240825222855793809-4504</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/how%20to%20make%20love%20by%20gabi%20abrão.mp3" length="41757" type="audio/mpeg"/>
-			<itunes:duration>10.056</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>gabi abrão</itunes:author>
-		</item>
-		<item>
-			<title>how to make love</title>
-			<description>Audio version of 'how to make love' by gabi abrão</description>
-			<pubDate>Sun, 25 Aug 2024 22:30:02 +0000</pubDate>
-			<guid isPermaLink="false">20240825223002374177-6053</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/how%20to%20make%20love%20by%20gabi%20abrão.mp3" length="42910" type="audio/mpeg"/>
-			<itunes:duration>10.344</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>gabi abrão</itunes:author>
-		</item>
-		<item>
-			<title>test_article</title>
-			<description>Audio version of 'test_article' by test_author</description>
-			<pubDate>Fri, 27 Sep 2024 00:18:40 +0000</pubDate>
-			<guid isPermaLink="false">20240927001840714554-8295</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/test_article%20by%20test_author.mp3" length="11483" type="audio/mpeg"/>
-			<itunes:duration>2.496</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>test_author</itunes:author>
-		</item>
-		<item>
-			<title>test_article</title>
-			<description>Audio version of 'test_article' by test_author</description>
-			<pubDate>Fri, 27 Sep 2024 00:26:43 +0000</pubDate>
-			<guid isPermaLink="false">20240927002643258511-1270</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/test_article%20by%20test_author.mp3" length="10618" type="audio/mpeg"/>
-			<itunes:duration>2.28</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>test_author</itunes:author>
-		</item>
-		<item>
-			<title>test_article</title>
-			<description>Audio version of 'test_article' by test_author</description>
-			<pubDate>Fri, 27 Sep 2024 00:26:57 +0000</pubDate>
-			<guid isPermaLink="false">20240927002657987836-8364</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/test_article%20by%20test_author.mp3" length="11099" type="audio/mpeg"/>
-			<itunes:duration>2.4</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>test_author</itunes:author>
-		</item>
-		<item>
-			<title>test_article</title>
-			<description>Audio version of 'test_article' by test_author</description>
-			<pubDate>Fri, 27 Sep 2024 00:27:16 +0000</pubDate>
-			<guid isPermaLink="false">20240927002716513000-4486</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/test_article%20by%20test_author.mp3" length="11002" type="audio/mpeg"/>
-			<itunes:duration>2.376</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>test_author</itunes:author>
-		</item>
-		<item>
-			<title>test_article</title>
-			<description>Audio version of 'test_article' by test_author</description>
-			<pubDate>Fri, 27 Sep 2024 00:27:35 +0000</pubDate>
-			<guid isPermaLink="false">20240927002735646193-9436</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/test_article%20by%20test_author.mp3" length="11195" type="audio/mpeg"/>
-			<itunes:duration>2.424</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>test_author</itunes:author>
-		</item>
-		<item>
-			<title>test_article</title>
-			<description>Audio version of 'test_article' by test_author</description>
-			<pubDate>Fri, 27 Sep 2024 00:28:12 +0000</pubDate>
-			<guid isPermaLink="false">20240927002812232618-2629</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/test_article%20by%20test_author.mp3" length="11483" type="audio/mpeg"/>
-			<itunes:duration>2.496</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>test_author</itunes:author>
-		</item>
-		<item>
-			<title>test_article</title>
-			<description>Audio version of 'test_article' by test_author</description>
-			<pubDate>Fri, 27 Sep 2024 00:28:24 +0000</pubDate>
-			<guid isPermaLink="false">20240927002824663176-2397</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/test_article%20by%20test_author.mp3" length="11002" type="audio/mpeg"/>
-			<itunes:duration>2.376</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>test_author</itunes:author>
-		</item>
-		<item>
-			<title>test_article</title>
-			<description>Audio version of 'test_article' by test_author</description>
-			<pubDate>Fri, 27 Sep 2024 00:45:16 +0000</pubDate>
-			<guid isPermaLink="false">20240927004516196390-4621</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/test_article%20by%20test_author.mp3" length="11195" type="audio/mpeg"/>
-			<itunes:duration>2.424</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>test_author</itunes:author>
-		</item>
-		<item>
-			<title>test_article</title>
-			<description>Audio version of 'test_article' by test_author</description>
-			<pubDate>Fri, 27 Sep 2024 00:45:30 +0000</pubDate>
-			<guid isPermaLink="false">20240927004530185362-8045</guid>
-			<enclosure url="https://article2audio.s3.amazonaws.com/test_article%20by%20test_author.mp3" length="11291" type="audio/mpeg"/>
-			<itunes:duration>2.448</itunes:duration>
-			<itunes:explicit>false</itunes:explicit>
-			<itunes:author>test_author</itunes:author>
-		</item>
-	</channel>
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+>
+  <channel>
+    <title>Tim's Articles</title>
+    <link>https://article2audio.com</link>
+    <language>en-us</language>
+    <copyright>© 2024 Tim Farrelly</copyright>
+    <itunes:author>Tim Farrelly</itunes:author>
+    <description>Tim's articles</description>
+    <itunes:image href="https://article2audio.com/podcast_cover.jpg"/>
+    <itunes:category text="Technology"/>
+    <itunes:explicit>false</itunes:explicit>
+    <atom:link href="https://article2audio.com/rss.xml" rel="self" type="application/rss+xml" />
+
+    <itunes:owner>
+      <itunes:name>Tim Farrelly</itunes:name>
+      <itunes:email>timf34@gmail.com</itunes:email>
+    </itunes:owner>
+
+    <item>
+      <title>The Reddits by Paul Graham</title>
+      <itunes:author>Tim</itunes:author>
+      <description>Description of this episode goes here.</description>
+      <pubDate>Tue, 01 Jun 2023 00:00:00 GMT</pubDate>
+      <enclosure url="https://article2audio.s3.amazonaws.com/The%20Reddits%20by%20Paul%20Graham.mp3" length="12345678" type="audio/mpeg"/>
+      <guid isPermaLink="false">make-this-programmatically-unique</guid>
+      <itunes:duration>00:06:16</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+
+    <item>
+      <title>Do Elephants Have Souls by The New Atlantis</title>
+      <itunes:author>Tim</itunes:author>
+      <description>Podcast description...</description>
+      <pubDate>Tue, 01 Jun 2023 00:00:00 GMT</pubDate>
+      <enclosure url="https://article2audio.s3.amazonaws.com/Do%20Elephants%20Have%20Souls%20by%20The+New%20Atlantis.mp3" length="12345678" type="audio/mpeg"/>
+      <guid isPermaLink="false">unique-identifier-for-this-episodex</guid>
+      <itunes:duration>01:44:02</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+
+    <!-- Add more <item> elements for each episode -->
+
+  </channel>
 </rss>

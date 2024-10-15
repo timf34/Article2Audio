@@ -2,7 +2,7 @@ import logging
 import os
 import psutil
 import uuid
-from fastapi import FastAPI, BackgroundTasks, HTTPException, Response, Request,  Depends
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Response, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordBearer
@@ -63,6 +63,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     except ValueError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+
 @app.post("/api/verify_token")
 async def verify_token(request: TokenVerificationRequest):
     try:
@@ -73,7 +74,7 @@ async def verify_token(request: TokenVerificationRequest):
             request.token,
             requests.Request(),
             GOOGLE_CLIENT_ID,
-            clock_skew_in_seconds=5
+            clock_skew_in_seconds=10
         )
 
         logging.info(f"Token verified. User info: {idinfo}")
@@ -83,8 +84,13 @@ async def verify_token(request: TokenVerificationRequest):
         logging.error(f"Token verification failed: {str(e)}")
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
+
 @app.post("/api/process_article", response_model=URLResponse)
-async def process_article(request: URLRequest, background_tasks: BackgroundTasks):
+async def process_article(
+        request: URLRequest,
+        background_tasks: BackgroundTasks,
+        current_user: dict = Depends(get_current_user)
+):
     url = request.url
     domain = get_domain(url)
     logging.info(f"Domain extracted: {domain}")
@@ -110,7 +116,10 @@ async def process_article(request: URLRequest, background_tasks: BackgroundTasks
         estimated_time = estimate_processing_time(text)
 
         tasks[task_id] = {'status': 'Creating audio file...', 'article_name': article_name, 'author_name': author_name}
-        background_tasks.add_task(generate_audio_task, text, article_name, author_name, tasks, task_id)
+
+        user_id = current_user['sub']
+
+        background_tasks.add_task(generate_audio_task, text, article_name, author_name, tasks, task_id, user_id)
 
         logging.info(f"Returning response with estimated_time: {estimated_time} and task_id: {task_id}")
         return URLResponse(estimated_time=estimated_time, task_id=task_id)
@@ -134,8 +143,9 @@ async def get_status(task_id: str):
 
 
 @app.get("/api/download/{file_id}")
-async def download_file(file_id: int):
-    audio_file = db_manager.get_audio_file(file_id)
+async def download_file(file_id: int, current_user: dict = Depends(get_current_user)):
+    user_id = current_user['sub']
+    audio_file = db_manager.get_audio_file(file_id, user_id)
     if not audio_file:
         raise HTTPException(status_code=404, detail="File not found")
     file_path = audio_file.file_path
@@ -147,9 +157,15 @@ async def download_file(file_id: int):
 
 
 @app.get("/api/audio_files")
-async def list_audio_files():
-    files = db_manager.list_audio_files()
-    return [{"id": file.id, "file_name": file.file_name, "creation_date": file.creation_date} for file in files]
+async def list_audio_files(current_user: dict = Depends(get_current_user)):
+    print(current_user)
+    user_id = current_user['sub']
+    print("user id get audio files", user_id)
+    files = db_manager.list_audio_files(user_id)
+    return [
+        {"id": file.id, "file_name": file.file_name, "creation_date": file.creation_date}
+        for file in files
+    ]
 
 
 @app.api_route("/rss.xml", methods=["GET", "HEAD"])

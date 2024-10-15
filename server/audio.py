@@ -39,7 +39,14 @@ def print_memory_usage():
 
 
 @profile
-def generate_audio_task(text: str, article_name: str, author_name: str, tasks: Dict[str, str], task_id: str) -> None:
+def generate_audio_task(
+        text: str,
+        article_name: str,
+        author_name: str,
+        tasks: Dict[str, str],
+        task_id: str,
+        user_id: str
+) -> None:
     try:
         if DEVELOPMENT:
             temp_file_path = "../speech.mp3"
@@ -53,7 +60,7 @@ def generate_audio_task(text: str, article_name: str, author_name: str, tasks: D
             print(f"tasks: {tasks}")
             print(f"task_id: {task_id}")
 
-            save_path = save_audio_file(merged_audio, article_name, author_name)
+            save_path = save_audio_file(merged_audio, article_name, author_name, user_id)
             del audio_segments
             del merged_audio
             tasks[task_id] = {'status': 'completed', 'file_path': save_path, 'file_name': article_name}
@@ -157,7 +164,7 @@ def save_audio_to_temp_file(merged_audio: AudioSegment) -> str:
         return temp_file.name
 
 
-def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: str) -> str:
+def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: str, user_id: str) -> str:
     try:
         output_dir = Path(MP3_DATA_DIR_PATH)
         if not output_dir.exists():
@@ -183,12 +190,12 @@ def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: 
         if not file_path.exists():
             raise ValueError("Failed to save the audio file.")
 
-        db_manager.add_audio_file(file_name)
+        db_manager.add_audio_file(file_name, user_id)
 
-        if upload_file_to_s3(file_path.as_posix(), file_name):
+        if upload_file_to_s3(file_path.as_posix(), file_name, user_id):
             print(f"Successfully uploaded {file_name} to S3")
 
-            file_url = f"{S3_BUCKET_URL}/{file_name.replace(' ', '%20')}"
+            file_url = f"{S3_BUCKET_URL}/{user_id}/{file_name.replace(' ', '%20')}"
 
             update_rss_feed(
                 title=sanitized_title,
