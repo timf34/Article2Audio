@@ -74,7 +74,7 @@ async def verify_token(request: TokenVerificationRequest):
             request.token,
             requests.Request(),
             GOOGLE_CLIENT_ID,
-            clock_skew_in_seconds=10
+            clock_skew_in_seconds=15
         )
 
         logging.info(f"Token verified. User info: {idinfo}")

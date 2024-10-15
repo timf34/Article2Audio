@@ -137,7 +137,8 @@ class SubstackScraper(BaseReader):
 
         # Author name
         # TODO: the 2nd last sequence of digits (the len = 5 one) changes frequently! Need a more robust method
-        return self.soup.select_one("a._decoration-hover-underline_3axfk_298").text.strip()
+        #  We want the app to still work, but we want to raise an error so I know to fix it.
+        return self.soup.select_one("a._decoration-hover-underline_btefp_281").text.strip()
 
     def save_post(self, url: str) -> None:
         """
