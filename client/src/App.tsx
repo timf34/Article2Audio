@@ -6,6 +6,7 @@ import StatusDisplay from './components/StatusDisplay';
 import AudioFileList from './components/AudioFileList';
 import Header from './components/Header';
 import LoginPage from './components/LoginPage';
+import RSSUrlDisplay from './components/RSSUrlDisplay';
 import { processArticle, getStatus, verifyToken } from './api';
 
 const theme = createTheme({
@@ -92,6 +93,7 @@ const App: React.FC = () => {
                 <Container maxWidth="md" sx={{ pt: 4, pb: 4 }}>
                   <URLForm onSubmit={handleSubmit} />
                   <StatusDisplay status={status} estimatedTime={estimatedTime} />
+                  <RSSUrlDisplay />
                   <AudioFileList />
                 </Container>
               </Box>

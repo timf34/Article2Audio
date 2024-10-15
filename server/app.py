@@ -203,7 +203,8 @@ async def rss_feed(user_id: str):
 @app.get("/api/get_feed_url")
 async def get_feed_url(current_user: dict = Depends(get_current_user)):
     user_id = current_user['sub']
-    feed_url = f"https://article2audio.com/rss/{user_id}.xml"
+    # feed_url = f"https://article2audio.com/rss/{user_id}.xml"
+    feed_url = f"http://localhost:3000/rss/{user_id}.xml"
     return {"feed_url": feed_url}
 
 

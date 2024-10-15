@@ -51,6 +51,11 @@ export const getAudioFiles = async (): Promise<AudioFile[]> => {
   return response.data;
 };
 
+export const getFeedUrl = async () => {
+  const response = await apiClient.get('/get_feed_url');
+  return response.data;
+};
+
 export const downloadFile = async (taskId: string) => {
     try {
         const response = await axios.get(`${API_URL}/download/${taskId}`, {
