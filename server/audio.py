@@ -203,7 +203,8 @@ def save_audio_file(merged_audio: AudioSegment, article_name: str, author_name: 
                 description=f"Audio version of '{sanitized_title}' by {author_name}",
                 file_url=file_url,
                 file_size=str(os.path.getsize(file_path)),
-                duration=str(merged_audio.duration_seconds)  # NOTE: I think this is supposed to be in H:MM:SS format
+                duration=str(merged_audio.duration_seconds),  # NOTE: I think this is supposed to be in H:MM:SS format
+                user_id=user_id
             )
 
         else:

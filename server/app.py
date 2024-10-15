@@ -190,6 +190,20 @@ async def rss_feed(request: Request):
         return Response(content=content, headers=headers, media_type="application/rss+xml")
 
 
+@app.get("/rss/{user_id}.xml")
+async def rss_feed(user_id: str):
+    content = get_rss_content(user_id)
+    headers = {"Content-Type": "application/rss+xml"}
+    return Response(content=content, headers=headers, media_type="application/rss+xml")
+
+
+@app.get("/api/get_feed_url")
+async def get_feed_url(current_user: dict = Depends(get_current_user)):
+    user_id = current_user['sub']
+    feed_url = f"https://article2audio.com/rss/{user_id}.xml"
+    return {"feed_url": feed_url}
+
+
 if __name__ == '__main__':
     import uvicorn
 

@@ -24,7 +24,7 @@ def upload_file_to_s3(local_file_path, s3_file_name, user_id) -> bool:
         return False
 
     try:
-        s3_key = f"user_{user_id}/{s3_file_name}"
+        s3_key = f"{user_id}/{s3_file_name}"
         s3_client.upload_file(local_file_path, S3_BUCKET_NAME, s3_key)
         return True
     except NoCredentialsError:
