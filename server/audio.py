@@ -6,6 +6,7 @@ import psutil
 import tempfile
 import time
 
+from contextlib import contextmanager
 from io import BytesIO
 from mutagen.easyid3 import EasyID3
 from openai import OpenAI
@@ -36,6 +37,15 @@ def print_memory_usage():
     process = psutil.Process()
     memory_info = process.memory_info()
     print(f"Current memory usage: {memory_info.rss / (1024 * 1024):.2f} MB")
+
+
+@contextmanager
+def cleanup_resources():
+    """Context manager to ensure proper cleanup of resources"""
+    try:
+        yield
+    finally:
+        gc.collect()
 
 
 @profile
@@ -113,40 +123,59 @@ def generate_audio_sequentially(text: str) -> List[AudioSegment]:
     return audio_segments
 
 
+# TODO: It's these two funcitons where memory is getting leaked!
 @profile
 def generate_audio_in_parallel(text: str) -> List[AudioSegment]:
     chunks = split_text_into_chunks(text, max_length=2048)   # TODO: be smarter about splitting the text, it affects the sound where its split, so should split at the end of a sentence or paragraph or such.
     audio_segments = [None] * len(chunks)
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        future_to_index = {executor.submit(generate_audio_chunk, chunk, openai_client): i for i, chunk in enumerate(chunks)}
+    with cleanup_resources(), concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        future_to_index = {
+            executor.submit(generate_audio_chunk, chunk, openai_client): i
+            for i, chunk in enumerate(chunks)
+        }
         for future in concurrent.futures.as_completed(future_to_index):
             index = future_to_index[future]
             try:
-                audio_segments[index] = future.result()
+                segment = future.result()
+                if segment:
+                    audio_segments[index] = segment
             except Exception as e:
                 logging.error(f"Failed to generate audio chunk at index {index}: {e}")
-            finally:
-                # Explicitly delete the future and enforce garbage collection
+                # Ensure future is done and its resources are released
+                if not future.done():
+                    future.cancel()
                 del future
-                gc.collect()  # Ensure garbage collection after each chunk
+                future_to_index.pop(index, None)  # Remove the completed future from the dict
+                gc.collect()
 
     return audio_segments
 
 
 @profile
 def generate_audio_chunk(chunk, openai_client) -> AudioSegment:
-    response = openai_client.audio.speech.create(
-        model="tts-1",
-        voice="alloy",
-        input=chunk
-    )
-    audio_data = BytesIO(response.content)
-    del response
-    audio_segment = AudioSegment.from_file(audio_data, format="mp3")
-    del audio_data
-    gc.collect()
-    print("Finished generating audio chunk")
-    return audio_segment
+    with cleanup_resources():
+        try:
+            response = openai_client.audio.speech.create(
+                model="tts-1",
+                voice="alloy",
+                input=chunk
+            )
+            with BytesIO() as audio_data:
+                response.export(audio_data, format="mp3")
+                audio_data.seek(0)
+            audio_size = len(audio_data.getvalue())
+
+            audio_segment = AudioSegment.from_file(audio_data, format="mp3")
+            final_segment = AudioSegment(
+                audio_segment._data,
+                frame_rate=audio_segment.frame_rate,
+                sample_width=audio_segment.sample_width,
+                channels=audio_segment.channels
+            )
+            return final_segment
+        finally:
+            gc.collect()
+            print("Finished generating audio chunk")
 
 
 def merge_audio_segments(audio_segments) -> AudioSegment:
