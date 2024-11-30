@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+
 import concurrent.futures
 import logging
 import gc
@@ -8,12 +12,12 @@ from pydub import AudioSegment
 from pydub.generators import WhiteNoise
 from typing import List
 
-from server.config import OPENAI_KEY
-
+OPENAI_KEY = "sk-proj-LSBB7YK5u2dPNatecXhuT3BlbkFJCeTbWMMUupZ08r2FLMfd"
 openai_client = OpenAI(api_key=OPENAI_KEY)
 from memory_profiler import profile
 
-with open("sample.txt", "r") as file:
+with open("development/sample.txt", "r") as file:
+    print("current directory: ", os.getcwd())
     text = file.read()
 
 
@@ -95,8 +99,11 @@ def create_audio_response_with_noise(duration=1000, noise_level: float = -30) ->
 
 
 def main():
-    while True:
-        input("Press Enter to generate audio segments")
+    # while True:
+    #     input("Press Enter to generate audio segments")
+    #     audio_segments = generate_audio_in_parallel(text)
+    #     print(f"Generated {len(audio_segments)} audio segments")
+    for i in range(5):
         audio_segments = generate_audio_in_parallel(text)
         print(f"Generated {len(audio_segments)} audio segments")
 
