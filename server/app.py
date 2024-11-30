@@ -185,9 +185,10 @@ async def list_audio_files(current_user: dict = Depends(get_current_user)):
     ]
 
 
-@app.api_route("/rss.xml", methods=["GET", "HEAD"])
-async def rss_feed(request: Request):
-    content = get_rss_content()
+# TODO: come back and properly fix this RSS stuff later after we fix the memory issue
+@app.api_route("{user_id}/rss.xml", methods=["GET", "HEAD"])
+async def rss_feed(request: Request, user_id: str):
+    content = get_rss_content(user_id)
     headers = {"Content-Type": "application/rss+xml"}
 
     if request.method == "HEAD":
