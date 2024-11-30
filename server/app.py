@@ -49,6 +49,7 @@ tasks = {}
 
 db_manager = DatabaseManager()
 
+
 def print_memory_usage():
     # Get current memory usage
     process = psutil.Process()
@@ -96,6 +97,7 @@ async def verify_token(request: TokenVerificationRequest):
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
 
+# TODO: This function is too long.
 @app.post("/api/process_article", response_model=URLResponse)
 async def process_article(
         request: URLRequest,
@@ -143,6 +145,7 @@ async def process_article(
         raise HTTPException(status_code=400, detail=error_message)
 
 
+# TODO: Name this funciton better
 @app.get("/api/status/{task_id}", response_model=StatusResponse)
 async def get_status(task_id: str):
     print(f"Tasks: {tasks}")
