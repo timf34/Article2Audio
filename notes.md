@@ -20,10 +20,10 @@ To run on Docker:
 
 ```angular2html
 # Build
-docker-compose build
+docker compose build
 
 # Run
-docker-compose up
+docker compose up
 ```
 
 
