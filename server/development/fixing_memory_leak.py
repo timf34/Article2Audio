@@ -106,6 +106,10 @@ def main():
     for i in range(5):
         audio_segments = generate_audio_in_parallel(text)
         print(f"Generated {len(audio_segments)} audio segments")
+        del audio_segments
+        gc.collect()
+
+    time.sleep(10)
 
 
 if __name__ == "__main__":
