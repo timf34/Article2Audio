@@ -45,7 +45,7 @@ def generate_audio_in_parallel(text: str) -> List[np.ndarray]:
 
 
 # Memory monitoring function
-def monitor_memory(interval=1):
+def monitor_memory(interval=2):
     """Periodically print memory usage."""
     process = psutil.Process()
     while True:
@@ -54,11 +54,30 @@ def monitor_memory(interval=1):
         time.sleep(interval)
 
 
-# Launch memory monitor
-if __name__ == "__main__":
+# Main function simulating a long-running server
+def main():
+    # Start memory monitoring in a separate thread
     monitor_thread = threading.Thread(target=monitor_memory, args=(2,), daemon=True)
     monitor_thread.start()
 
     test_text = "This is a test string. " * 10000  # Simulate large input
-    tensors = generate_audio_in_parallel(test_text)
-    print(f"Generated {len(tensors)} tensor chunks.")
+
+    while True:
+        input("Press Enter to run the generate_audio_in_parallel function...")
+
+        print("Memory usage before running function:")
+        memory_info_before = psutil.Process().memory_info()
+        print(f"  RSS: {memory_info_before.rss / (1024 * 1024):.2f} MB")
+
+        tensors = generate_audio_in_parallel(test_text)
+        print(f"Generated {len(tensors)} tensor chunks.")
+
+        print("Memory usage after running function:")
+        memory_info_after = psutil.Process().memory_info()
+        print(f"  RSS: {memory_info_after.rss / (1024 * 1024):.2f} MB")
+
+        print("Press Enter to run the function again or Ctrl+C to exit.")
+
+
+if __name__ == "__main__":
+    main()
