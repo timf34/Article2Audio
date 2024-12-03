@@ -18,7 +18,7 @@ from pydub import AudioSegment
 from pydub.generators import WhiteNoise
 from typing import List
 
-OPENAI_KEY = "sk-proj-LSBB7YK5u2dPNatecXhuT3BlbkFJCeTbWMMUupZ08r2FLMfd"
+OPENAI_KEY = "openaikey"
 openai_client = OpenAI(api_key=OPENAI_KEY)
 from memory_profiler import profile
 from audio import split_text_into_chunks
