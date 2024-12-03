@@ -171,8 +171,6 @@ def simulate_memory_usage(size_mb: int) -> AudioSegment:
     return response
 
 
-
-
 def create_audio_response_with_noise(duration=1000, noise_level: float = -30) -> AudioSegment:
     with cleanup_resources():
         response = AudioSegment.silent(duration=duration)

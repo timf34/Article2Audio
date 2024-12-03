@@ -1,23 +1,35 @@
-# Use an official lightweight Python image
-FROM python:3.10-slim
-
-# Set the working directory inside the container
+# server/Dockerfile
+FROM python:3.11-slim
 WORKDIR /app
-
-# Copy only the requirements file first (to leverage caching)
-COPY requirements.txt /app/
-
-# Install dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
 # Install ffmpeg
 RUN apt-get update && apt-get install -y ffmpeg
+COPY . .
+EXPOSE 8001
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8001"]
 
-# Copy the entire project into the container
-COPY . /app/
-
-# Set the PYTHONPATH to include the working directory
-ENV PYTHONPATH=/app
-
-# Specify the default command to run the script
-CMD ["python", "development/fixing_memory_leak.py"]
+## Use an official lightweight Python image
+#FROM python:3.10-slim
+#
+## Set the working directory inside the container
+#WORKDIR /app
+#
+## Copy only the requirements file first (to leverage caching)
+#COPY requirements.txt /app/
+#
+## Install dependencies
+#RUN pip install --no-cache-dir -r requirements.txt
+#
+## Install ffmpeg
+#RUN apt-get update && apt-get install -y
+#RUN apt-get install -y ffmpeg
+#
+## Copy the entire project into the container
+#COPY . /app/
+#
+## Set the PYTHONPATH to include the working directory
+#ENV PYTHONPATH=/app
+#
+## Specify the default command to run the script
+#CMD ["python", "development/fixing_memory_leak.py"]

@@ -8,6 +8,7 @@ import time
 
 from contextlib import contextmanager
 from io import BytesIO
+from memory_profiler import profile
 from mutagen.easyid3 import EasyID3
 from openai import OpenAI
 from pathlib import Path
@@ -19,8 +20,6 @@ from database import DatabaseManager
 from rss_manager import update_rss_feed
 from s3_manager import upload_file_to_s3
 from utils import sanitize_filename
-
-from memory_profiler import profile
 
 
 openai_client = OpenAI(api_key=OPENAI_KEY)
