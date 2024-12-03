@@ -1,4 +1,5 @@
 import logging
+import gc
 import os
 import psutil
 import uuid
@@ -97,7 +98,8 @@ async def verify_token(request: TokenVerificationRequest):
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
 
-# TODO: This function is too long.
+import gc  # Add this import for garbage collection
+
 @app.post("/api/process_article", response_model=URLResponse)
 async def process_article(
         request: URLRequest,
@@ -115,34 +117,42 @@ async def process_article(
             scraper = articles.ArticleReader()
 
         task_id = str(uuid.uuid4())
-
         tasks[task_id] = {'status': 'scraping_url'}
 
+        # Perform the scraping
         text = scraper.get_post_content(url)
-        # TODO: Add error handling in case these are None or ""
         article_name = scraper.get_article_name(url)
         author_name = scraper.get_author_name(url)
-        del scraper  # Clean up the scraper object
+        del scraper  # Explicitly delete scraper to free resources
+
         if not text:
             raise ValueError("No content found at the provided URL.")
 
-        estimated_time = estimate_processing_time(text)
+        # Simulate estimated processing time
+        estimated_time = 30  # Assign a mock value for testing
+        tasks[task_id] = {'status': 'Scraped successfully', 'article_name': article_name, 'author_name': author_name}
 
-        tasks[task_id] = {'status': 'Creating audio file...', 'article_name': article_name, 'author_name': author_name}
+        # Skip background task
+        # Uncomment the following lines when you want to enable background task:
+        # user_id = current_user['sub']
+        # given_name = current_user['given_name']
+        # background_tasks.add_task(
+        #     generate_audio_task, text, article_name, author_name, tasks, task_id, user_id, given_name
+        # )
 
-        user_id = current_user['sub']
-        given_name = current_user['given_name']
-
-        background_tasks.add_task(
-            generate_audio_task, text, article_name, author_name, tasks, task_id, user_id, given_name
-        )
+        # Trigger garbage collection and log memory usage
+        gc.collect()
+        print_memory_usage()
 
         logging.info(f"Returning response with estimated_time: {estimated_time} and task_id: {task_id}")
         return URLResponse(estimated_time=estimated_time, task_id=task_id)
+
     except Exception as e:
         logging.error(f"Error processing article: {e}")
         error_message = str(e) or "Failed to process the URL. Please check the URL and try again."
         raise HTTPException(status_code=400, detail=error_message)
+
+
 
 
 # TODO: Name this funciton better
@@ -212,7 +222,7 @@ async def get_feed_url(current_user: dict = Depends(get_current_user)):
     return {"feed_url": feed_url}
 
 
-if __name__ == '__main__':
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8001, log_level="info")
+# if __name__ == '__main__':
+#     import uvicorn
+#
+#     uvicorn.run(app, host="0.0.0.0", port=8001, log_level="info")

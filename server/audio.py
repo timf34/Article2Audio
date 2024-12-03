@@ -106,7 +106,7 @@ def split_text_into_chunks(text, max_length=4096) -> List[str]:
 
     return chunks
 
-
+@profile
 def generate_audio_sequentially(text: str) -> List[AudioSegment]:
     chunks = split_text_into_chunks(text)
     audio_segments = []
