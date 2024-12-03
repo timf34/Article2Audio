@@ -1,0 +1,48 @@
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin-top: 3rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.audio {
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.date {
+    display: block;
+    color: #666;
+    font-size: 0.875rem;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+.empty {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    color: #666;
+}
