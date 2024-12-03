@@ -152,29 +152,18 @@ def generate_audio_in_parallel(text: str) -> List[AudioSegment]:
 
 @profile
 def generate_audio_chunk(chunk, openai_client) -> AudioSegment:
-    with cleanup_resources():
-        try:
-            response = openai_client.audio.speech.create(
-                model="tts-1",
-                voice="alloy",
-                input=chunk
-            )
-            with BytesIO() as audio_data:
-                response.export(audio_data, format="mp3")
-                audio_data.seek(0)
-            audio_size = len(audio_data.getvalue())
-
-            audio_segment = AudioSegment.from_file(audio_data, format="mp3")
-            final_segment = AudioSegment(
-                audio_segment._data,
-                frame_rate=audio_segment.frame_rate,
-                sample_width=audio_segment.sample_width,
-                channels=audio_segment.channels
-            )
-            return final_segment
-        finally:
-            gc.collect()
-            print("Finished generating audio chunk")
+    response = openai_client.audio.speech.create(
+        model="tts-1",
+        voice="alloy",
+        input=chunk
+    )
+    audio_data = BytesIO(response.content)
+    del response
+    audio_segment = AudioSegment.from_file(audio_data, format="mp3")
+    del audio_data
+    gc.collect()
+    print("Finished generating audio chunk")
+    return audio_segment
 
 
 def merge_audio_segments(audio_segments) -> AudioSegment:
