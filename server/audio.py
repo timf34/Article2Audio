@@ -83,7 +83,7 @@ def generate_audio_task(
 
 
 def create_audio_file(text: str, article_name: str, author_name: str) -> str:
-    audio_segments = generate_audio_in_parallel(text)
+    audio_segments = generate_audio_sequentially(text)
     merged_audio = merge_audio_segments(audio_segments)
     file_path = save_audio_file(merged_audio, article_name, author_name)  # TODO: this is getting called twice!
     return file_path
@@ -122,10 +122,10 @@ def generate_audio_sequentially(text: str) -> List[AudioSegment]:
     return audio_segments
 
 
-# TODO: It's these two funcitons where memory is getting leaked!
+# Note: this has memory issues!
 @profile
 def generate_audio_in_parallel(text: str) -> List[AudioSegment]:
-    chunks = split_text_into_chunks(text, max_length=2048)   # TODO: be smarter about splitting the text, it affects the sound where its split, so should split at the end of a sentence or paragraph or such.
+    chunks = split_text_into_chunks(text, max_length=2048)
     audio_segments = [None] * len(chunks)
     with cleanup_resources(), concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
         future_to_index = {
