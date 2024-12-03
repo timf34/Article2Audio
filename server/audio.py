@@ -62,7 +62,7 @@ def generate_audio_task(
             temp_file_path = "../speech.mp3"
         else:
 
-            audio_segments = generate_audio_in_parallel(text)
+            audio_segments = generate_audio_sequentially(text)
             merged_audio = merge_audio_segments(audio_segments)
 
             print(f"article_name: {article_name}")
