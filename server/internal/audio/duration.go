@@ -1,4 +1,3 @@
-// internal/audio/duration.go
 package audio
 
 import (
