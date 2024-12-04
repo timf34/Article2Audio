@@ -52,7 +52,6 @@ func (s *S3Storage) UploadAudio(userID string, filename string, data []byte) err
 }
 
 func (s *S3Storage) ListAudioFiles(userID string) ([]string, error) {
-
 	if userID == "" {
 		return nil, fmt.Errorf("userID cannot be empty")
 	}
@@ -65,6 +64,10 @@ func (s *S3Storage) ListAudioFiles(userID string) ([]string, error) {
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to list files for user %s: %v", userID, err)
+	}
+
+	if len(result.Contents) == 0 {
+		return nil, fmt.Errorf("no files found for user %s", userID)
 	}
 
 	var files []string

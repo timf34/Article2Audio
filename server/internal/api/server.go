@@ -28,7 +28,7 @@ func NewServer(cs *conversion.AudioConverter) *Server {
 func (s *Server) routes() {
 	s.router.HandleFunc("/convert", s.handler.HandleConversion).Methods("POST")
 	s.router.HandleFunc("/status/{jobId}", s.handler.GetConversionStatus).Methods("GET")
-	//s.router.HandleFunc("/audio-files", s.handler.ListAudioFiles).Methods("GET")
+	s.router.HandleFunc("/audio-files", s.handler.ListAudioFiles).Methods("GET")
 }
 
 func (s *Server) Start(addr string) error {

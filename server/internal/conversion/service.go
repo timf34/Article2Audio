@@ -63,9 +63,8 @@ func (ac *AudioConverter) GetStatus(jobID string) (*ConversionJob, error) {
 	return job, nil
 }
 
-// ListAudioFiles returns all converted audio files
-func (ac *AudioConverter) ListAudioFiles() ([]string, error) {
-	return ac.storage.ListAudioFiles("")
+func (ac *AudioConverter) ListAudioFiles(userID string) ([]string, error) {
+	return ac.storage.ListAudioFiles(userID)
 }
 
 func (ac *AudioConverter) processJob(userID string, job *ConversionJob) {

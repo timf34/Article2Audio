@@ -3,6 +3,7 @@ package api
 import (
 	"article2audio/internal/conversion"
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -57,4 +58,45 @@ func (h *Handler) GetConversionStatus(w http.ResponseWriter, r *http.Request) {
 		Status: job.Status,
 		Error:  job.Error,
 	})
+}
+
+func (h *Handler) ListAudioFiles(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("userID").(string)
+
+	files, err := h.conversionService.ListAudioFiles(userID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	response := struct {
+		Files []struct {
+			Key       string `json:"key"`
+			URL       string `json:"url"`
+			CreatedAt string `json:"createdAt"`
+		} `json:"files"`
+	}{
+		Files: []struct {
+			Key       string `json:"key"`
+			URL       string `json:"url"`
+			CreatedAt string `json:"createdAt"`
+		}{},
+	}
+
+	for _, file := range files {
+		// Example: S3 base URL and creation time (replace with actual logic for `CreatedAt`)
+		baseURL := "https://your-s3-bucket.s3.amazonaws.com" // Update with your actual S3 bucket URL
+		response.Files = append(response.Files, struct {
+			Key       string `json:"key"`
+			URL       string `json:"url"`
+			CreatedAt string `json:"createdAt"`
+		}{
+			Key:       file,
+			URL:       fmt.Sprintf("%s/%s", baseURL, file),
+			CreatedAt: "2024-12-04T12:00:00Z", // Replace with actual creation time from S3 if available
+		})
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }

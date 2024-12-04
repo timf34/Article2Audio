@@ -61,7 +61,7 @@ export default function Home() {
             </div>
         )}
 
-        {/* <AudioList /> */}
+         <AudioList />
       </div>
   )
 }

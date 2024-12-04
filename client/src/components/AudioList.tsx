@@ -19,15 +19,17 @@ export function AudioList() {
 
     const fetchAudioFiles = async () => {
         try {
-            const response = await fetch('http://your-go-api.com/audio-files')
+            const response = await fetch('http://localhost:8080/audio-files')
             const data = await response.json()
-            setAudioFiles(data)
+            console.log('Fetched audio files:', data)
+            setAudioFiles(data.files || []) // Extract "files" array from the response
         } catch (error) {
             console.error('Error fetching audio files:', error)
         } finally {
             setLoading(false)
         }
     }
+
 
     if (loading) {
         return <div className={styles.loading}>Loading audio files...</div>
@@ -40,7 +42,7 @@ export function AudioList() {
                 <p className={styles.empty}>No audio files yet. Try converting an article!</p>
             ) : (
                 <div className={styles.grid}>
-                    {audioFiles.map((file) => (
+                    {Array.isArray(audioFiles) && audioFiles.map((file) => (
                         <div key={file.key} className={styles.card}>
                             <h3>{file.key}</h3>
                             <audio controls src={file.url} className={styles.audio} />
