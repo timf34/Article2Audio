@@ -1,25 +1,24 @@
 package api
 
 import (
+	"article2audio/internal/conversion"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
-
-	"article2audio/internal/conversion"
 )
 
 type Handler struct {
-	conversionService *ConversionService
+	conversionService *conversion.AudioConverter // Changed from ConversionService
 }
 
-func NewHandler(cs *ConversionService) *Handler {
+func NewHandler(cs *conversion.AudioConverter) *Handler { // Changed from ConversionService
 	return &Handler{
 		conversionService: cs,
 	}
 }
 
 func (h *Handler) HandleConversion(w http.ResponseWriter, r *http.Request) {
-	var req ConversionRequest
+	var req conversion.ConversionRequest // Added conversion. prefix
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -31,10 +30,10 @@ func (h *Handler) HandleConversion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := ConversionResponse{
+	response := conversion.ConversionResponse{ // Added conversion. prefix
 		JobID:         job.ID,
 		Status:        job.Status,
-		EstimatedTime: 30, // Estimate based on article length
+		EstimatedTime: 30,
 	}
 
 	json.NewEncoder(w).Encode(response)
@@ -50,21 +49,9 @@ func (h *Handler) GetConversionStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(ConversionResponse{
+	json.NewEncoder(w).Encode(conversion.ConversionResponse{ // Added conversion. prefix
 		JobID:  job.ID,
 		Status: job.Status,
 		Error:  job.Error,
-	})
-}
-
-func (h *Handler) ListAudioFiles(w http.ResponseWriter, r *http.Request) {
-	files, err := h.conversionService.ListAudioFiles()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"files": files,
 	})
 }
