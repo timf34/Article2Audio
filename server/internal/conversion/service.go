@@ -30,22 +30,22 @@ func New(
 	}
 }
 
-// StartConversion initiates the conversion process
-func (ac *AudioConverter) StartConversion(url string) (*ConversionJob, error) {
+func (ac *AudioConverter) StartConversion(userID, url string) (*ConversionJob, error) {
 	jobID := uuid.New().String()
 
 	job := &ConversionJob{
 		ID:     jobID,
 		URL:    url,
 		Status: StatusPending,
+		UserID: userID,
 	}
 
 	ac.mu.Lock()
 	ac.jobs[jobID] = job
 	ac.mu.Unlock()
 
-	// Start processing in background
-	go ac.processJob(job)
+	// Start processing in the background
+	go ac.processJob(userID, job)
 
 	return job, nil
 }
@@ -65,12 +65,10 @@ func (ac *AudioConverter) GetStatus(jobID string) (*ConversionJob, error) {
 
 // ListAudioFiles returns all converted audio files
 func (ac *AudioConverter) ListAudioFiles() ([]string, error) {
-	return ac.storage.ListAudioFiles()
+	return ac.storage.ListAudioFiles("")
 }
 
-// Private methods
-func (ac *AudioConverter) processJob(job *ConversionJob) {
-	// Update status to parsing
+func (ac *AudioConverter) processJob(userID string, job *ConversionJob) {
 	ac.updateJobStatus(job, StatusParsing)
 
 	// Extract article content
@@ -81,18 +79,20 @@ func (ac *AudioConverter) processJob(job *ConversionJob) {
 	}
 	job.Content = content
 
-	// Generate audio
 	ac.updateJobStatus(job, StatusGenerating)
+
+	// Generate audio
 	audioData, err := ac.audioGen.GenerateAudio(content)
 	if err != nil {
 		ac.handleJobError(job, "Failed to generate audio: "+err.Error())
 		return
 	}
 
-	// Upload to storage
 	ac.updateJobStatus(job, StatusUploading)
+
+	// Upload to storage with userID
 	filename := job.ID + ".mp3"
-	err = ac.storage.UploadAudio(filename, audioData)
+	err = ac.storage.UploadAudio(userID, filename, audioData)
 	if err != nil {
 		ac.handleJobError(job, "Failed to upload audio: "+err.Error())
 		return

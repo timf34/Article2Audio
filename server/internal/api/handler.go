@@ -18,19 +18,22 @@ func NewHandler(cs *conversion.AudioConverter) *Handler { // Changed from Conver
 }
 
 func (h *Handler) HandleConversion(w http.ResponseWriter, r *http.Request) {
-	var req conversion.ConversionRequest // Added conversion. prefix
+	// Extract userID from context
+	userID := r.Context().Value("userID").(string)
+
+	var req conversion.ConversionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	job, err := h.conversionService.StartConversion(req.URL)
+	job, err := h.conversionService.StartConversion(userID, req.URL)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	response := conversion.ConversionResponse{ // Added conversion. prefix
+	response := conversion.ConversionResponse{
 		JobID:         job.ID,
 		Status:        job.Status,
 		EstimatedTime: 30,

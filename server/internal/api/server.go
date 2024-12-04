@@ -18,6 +18,10 @@ func NewServer(cs *conversion.AudioConverter) *Server {
 	}
 	s.handler = NewHandler(cs)
 	s.routes()
+
+	// Wrap router with UserAuthMiddleware
+	s.router.Use(UserAuthMiddleware)
+
 	return s
 }
 

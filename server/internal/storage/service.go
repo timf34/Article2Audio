@@ -26,14 +26,14 @@ func New() *S3Storage {
 }
 
 func (s *S3Storage) UploadAudio(userID string, filename string, data []byte) error {
-	log.Printf("Starting upload to S3: Bucket=%s, Filename=%s", s.bucket, filename)
-
-	key := filename
-	if userID != "" { // Prefix with userID if provided
-		key = fmt.Sprintf("%s/%s", userID, filename)
+	if userID == "" {
+		return fmt.Errorf("userID cannot be empty")
 	}
+	key := fmt.Sprintf("%s/%s", userID, filename)
 
-	metadata := map[string]*string{} // empty for now
+	log.Printf("Starting upload to S3: Bucket=%s, Key=%s", s.bucket, key)
+
+	metadata := map[string]*string{} // Metadata can be added here as needed
 
 	_, err := s.client.PutObject(&s3.PutObjectInput{
 		Bucket:   aws.String(s.bucket),
@@ -47,21 +47,24 @@ func (s *S3Storage) UploadAudio(userID string, filename string, data []byte) err
 		return err
 	}
 
-	log.Printf("Successfully uploaded file to S3: Bucket=%s, Filename=%s", s.bucket, filename)
+	log.Printf("Successfully uploaded file to S3: Bucket=%s, Key=%s", s.bucket, key)
 	return nil
 }
 
 func (s *S3Storage) ListAudioFiles(userID string) ([]string, error) {
-	prefix := ""
-	if userID != "" { // Filter files by userID prefix if provided
-		prefix = fmt.Sprintf("%s/", userID)
+
+	if userID == "" {
+		return nil, fmt.Errorf("userID cannot be empty")
 	}
+
+	prefix := fmt.Sprintf("%s/", userID)
 	result, err := s.client.ListObjectsV2(&s3.ListObjectsV2Input{
 		Bucket: aws.String(s.bucket),
 		Prefix: aws.String(prefix),
 	})
+
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to list files for user %s: %v", userID, err)
 	}
 
 	var files []string

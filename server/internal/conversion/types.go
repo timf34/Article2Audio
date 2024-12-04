@@ -9,6 +9,7 @@ type ConversionJob struct {
 	Content       string
 	AudioFileName string
 	Error         string
+	UserID        string
 }
 
 const (
