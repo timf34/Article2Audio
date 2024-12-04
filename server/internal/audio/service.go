@@ -121,6 +121,8 @@ func (s *Audio) generateChunk(text string, index int, resultChan chan<- ChunkRes
 
 // GenerateAudio processes the text in chunks concurrently
 func (s *Audio) GenerateAudio(text string) ([]byte, error) {
+	log.Printf("Starting audio generation for text of length %d characters", len(text))
+
 	const maxChunkSize = 2048 // Maximum characters per chunk
 	chunks := splitTextIntoChunks(text, maxChunkSize)
 
