@@ -1,5 +1,5 @@
 // article_service_test.go
-package main
+package article
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestArticleService_ExtractContent(t *testing.T) {
-	service := NewArticleService()
+	service := New()
 
 	urls := []string{
 		// "https://medium.com/@kentcdodds/write-tests-not-too-many-mostly-integration-5e8c7fff591c",

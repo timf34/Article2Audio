@@ -1,4 +1,4 @@
-package main
+package storage
 
 import (
 	"bytes"
@@ -7,23 +7,23 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-type S3Service struct {
+type S3Storage struct {
 	client *s3.S3
 	bucket string
 }
 
-func NewS3Service() *S3Service {
+func New() *S3Storage {
 	sess := session.Must(session.NewSession(&aws.Config{
-		Region: aws.String("your-region"),
+		Region: aws.String("eu-west-1"),
 	}))
 
-	return &S3Service{
+	return &S3Storage{
 		client: s3.New(sess),
-		bucket: "your-bucket-name",
+		bucket: "article2audio",
 	}
 }
 
-func (s *S3Service) UploadAudio(filename string, data []byte) error {
+func (s *S3Storage) UploadAudio(filename string, data []byte) error {
 	_, err := s.client.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(s.bucket),
 		Key:    aws.String(filename),
@@ -33,7 +33,7 @@ func (s *S3Service) UploadAudio(filename string, data []byte) error {
 	return err
 }
 
-func (s *S3Service) ListAudioFiles() ([]string, error) {
+func (s *S3Storage) ListAudioFiles() ([]string, error) {
 	result, err := s.client.ListObjectsV2(&s3.ListObjectsV2Input{
 		Bucket: aws.String(s.bucket),
 	})

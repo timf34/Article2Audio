@@ -14,7 +14,7 @@ export default function Home() {
     setProcessing(true)
 
     try {
-      const response = await fetch('http://your-go-api.com/convert', {
+      const response = await fetch('http://localhost:8080/convert', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ export default function Home() {
             </div>
         )}
 
-        <AudioList />
+        {/* <AudioList /> */}
       </div>
   )
 }

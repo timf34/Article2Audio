@@ -1,21 +1,21 @@
-package main
+package article
 
 import (
 	goose "github.com/advancedlogic/GoOse"
 )
 
-type ArticleService struct {
+type Article struct {
 	goose *goose.Goose
 }
 
-func NewArticleService() *ArticleService {
+func New() *Article {
 	g := goose.New()
-	return &ArticleService{
+	return &Article{
 		goose: &g,
 	}
 }
 
-func (s *ArticleService) ExtractContent(url string) (string, error) {
+func (s *Article) ExtractContent(url string) (string, error) {
 	article, err := s.goose.ExtractFromURL(url)
 	if err != nil {
 		return "", err
