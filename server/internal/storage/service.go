@@ -51,7 +51,10 @@ func (s *S3Storage) UploadAudio(userID string, filename string, data []byte) err
 	return nil
 }
 
-func (s *S3Storage) ListAudioFiles(userID string) ([]string, error) {
+func (s *S3Storage) ListAudioFiles(userID string) ([]struct {
+	Key       string
+	CreatedAt string
+}, error) {
 	if userID == "" {
 		return nil, fmt.Errorf("userID cannot be empty")
 	}
@@ -70,9 +73,18 @@ func (s *S3Storage) ListAudioFiles(userID string) ([]string, error) {
 		return nil, fmt.Errorf("no files found for user %s", userID)
 	}
 
-	var files []string
+	var files []struct {
+		Key       string
+		CreatedAt string
+	}
 	for _, obj := range result.Contents {
-		files = append(files, *obj.Key)
+		files = append(files, struct {
+			Key       string
+			CreatedAt string
+		}{
+			Key:       *obj.Key,
+			CreatedAt: obj.LastModified.Format("2006-01-02T15:04:05Z"), // ISO 8601 format
+		})
 	}
 	return files, nil
 }
