@@ -8,9 +8,15 @@ import (
 	"article2audio/internal/audio"
 	"article2audio/internal/conversion"
 	"article2audio/internal/storage"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// Load environment variables
+	if err := godotenv.Load(); err != nil {
+		log.Printf("Warning: Error loading .env file: %v", err)
+	}
+
 	// Initialize services
 	storageService := storage.New()
 	openaiService := audio.New()
