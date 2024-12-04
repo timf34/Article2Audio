@@ -44,6 +44,8 @@ func main() {
 	// Read the XML file contents
 	byteValue, _ := ioutil.ReadAll(xmlFile)
 
+	fmt.Println("Before unmarshaling: ", string(byteValue))
+
 	// Unmarshal the XML data into the RSS struct
 	var rss RSS
 	err = xml.Unmarshal(byteValue, &rss)
@@ -52,9 +54,14 @@ func main() {
 		return
 	}
 
+	// Print everything unmarshalled
+	fmt.Printf("After unmarshaling \n")
+	fmt.Printf("RSS: %v\n", rss)
+
 	// Print the contents of each <item>
 	for i, item := range rss.Channel.Items {
 		fmt.Printf("Item %d:\n", i+1)
+		fmt.Printf("  Item: %v\n", item)
 		fmt.Printf("  Title: %s\n", item.Title)
 		fmt.Printf("  Author: %s\n", item.Author)
 		fmt.Printf("  Description: %s\n", item.Description)
