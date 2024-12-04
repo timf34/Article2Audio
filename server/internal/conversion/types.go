@@ -2,6 +2,15 @@ package conversion
 
 type ConversionStatus string
 
+type ConversionJob struct {
+	ID            string
+	URL           string
+	Status        ConversionStatus
+	Content       string
+	AudioFileName string
+	Error         string
+}
+
 const (
 	StatusPending    ConversionStatus = "PENDING"
 	StatusParsing    ConversionStatus = "PARSING"
@@ -20,13 +29,4 @@ type ConversionResponse struct {
 	Status        ConversionStatus `json:"status"`
 	EstimatedTime int              `json:"estimatedTime"`
 	Error         string           `json:"error,omitempty"`
-}
-
-type ConversionJob struct {
-	ID            string
-	URL           string
-	Status        ConversionStatus
-	Content       string
-	AudioFileName string
-	Error         string
 }
