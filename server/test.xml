@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Tim's Articles</title>
+        <link>https://article2audio.com</link>
+        <language>en-us</language>
+        <copyright>© 2024 Tim Farrelly</copyright>
+        <itunes:author>Tim Farrelly</itunes:author>
+        <description>Tim's articles</description>
+        <itunes:image href="https://article2audio.com/podcast_cover.jpg"/>
+        <itunes:category text="Technology"/>
+        <itunes:explicit>false</itunes:explicit>
+        <atom:link href="https://article2audio.com/rss.xml" rel="self" type="application/rss+xml"/>
+        <itunes:owner>
+            <itunes:name>Tim Farrelly</itunes:name>
+            <itunes:email>timf34@gmail.com</itunes:email>
+        </itunes:owner>
+        <item>
+            <title>The Reddits by Paul Graham</title>
+            <itunes:author>Tim</itunes:author>
+            <description>Description of this episode goes here.</description>
+            <pubDate>Tue, 01 Jun 2023 00:00:00 GMT</pubDate>
+            <enclosure url="https://article2audio.s3.amazonaws.com/The%20Reddits%20by%20Paul%20Graham.mp3" length="12345678" type="audio/mpeg"/>
+            <guid isPermaLink="false">make-this-programmatically-unique</guid>
+            <itunes:duration>00:06:16</itunes:duration>
+            <itunes:explicit>false</itunes:explicit>
+        </item>
+        <item>
+            <title>Do Elephants Have Souls by The New Atlantis</title>
+            <itunes:author>Tim</itunes:author>
+            <description>Podcast description...</description>
+            <pubDate>Tue, 01 Jun 2023 00:00:00 GMT</pubDate>
+            <enclosure url="https://article2audio.s3.amazonaws.com/Do%20Elephants%20Have%20Souls%20by%20The+New%20Atlantis.mp3" length="12345678" type="audio/mpeg"/>
+            <guid isPermaLink="false">unique-identifier-for-this-episodex</guid>
+            <itunes:duration>01:44:02</itunes:duration>
+            <itunes:explicit>false</itunes:explicit>
+        </item>
+    </channel>
+</rss>
