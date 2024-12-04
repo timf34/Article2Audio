@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"log"
@@ -83,4 +84,54 @@ func (s *S3Storage) ListAudioFiles(userID string) ([]AudioFile, error) {
 		})
 	}
 	return files, nil
+}
+
+func (s *S3Storage) UploadFile(userID string, filename string, data []byte) error {
+	return s.UploadAudio(userID, filename, data) // Reuse existing upload function
+}
+
+func (s *S3Storage) DownloadFile(userID string, filename string) ([]byte, error) {
+	key := fmt.Sprintf("%s/%s", userID, filename)
+
+	result, err := s.client.GetObject(&s3.GetObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to download file: %v", err)
+	}
+	defer result.Body.Close()
+
+	buf := new(bytes.Buffer)
+	_, err = buf.ReadFrom(result.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file: %v", err)
+	}
+
+	return buf.Bytes(), nil
+}
+
+func (s *S3Storage) FileExists(userID string, filename string) (bool, error) {
+	key := fmt.Sprintf("%s/%s", userID, filename)
+
+	_, err := s.client.HeadObject(&s3.HeadObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
+	})
+
+	if err != nil {
+		// Check if error is because file doesn't exist
+		if aerr, ok := err.(awserr.Error); ok {
+			if aerr.Code() == "NotFound" {
+				return false, nil
+			}
+		}
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (s *S3Storage) GetBucketName() string {
+	return s.bucket
 }

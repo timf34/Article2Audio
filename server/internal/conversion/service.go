@@ -3,9 +3,11 @@ package conversion
 import (
 	"article2audio/internal/article"
 	"article2audio/internal/audio"
+	"article2audio/internal/rss"
 	"article2audio/internal/storage"
 	"fmt"
 	"github.com/google/uuid"
+	"log"
 	"sync"
 )
 
@@ -15,6 +17,7 @@ type AudioConverter struct {
 	storage       *storage.S3Storage
 	audioGen      *audio.Audio
 	articleParser *article.Article
+	rssService    *rss.RSSService
 }
 
 func New(
@@ -27,6 +30,7 @@ func New(
 		storage:       storage,
 		audioGen:      audioGen,
 		articleParser: articleParser,
+		rssService:    rss.New(storage),
 	}
 }
 
@@ -87,6 +91,14 @@ func (ac *AudioConverter) processJob(userID string, job *ConversionJob) {
 		return
 	}
 
+	// Calculate duration
+	durationSeconds, err := audio.CalculateMP3Duration(audioData)
+	if err != nil {
+		log.Printf("Warning: Failed to calculate MP3 duration: %v", err)
+		durationSeconds = 0 // Default to 0 if calculation fails
+	}
+	job.Duration = float64(durationSeconds)
+
 	ac.updateJobStatus(job, StatusUploading)
 
 	// Upload to storage with userID
@@ -98,6 +110,30 @@ func (ac *AudioConverter) processJob(userID string, job *ConversionJob) {
 	}
 
 	job.AudioFileName = filename
+
+	// After successful upload, update RSS feed
+	feed, err := ac.rssService.GetOrCreateFeed(userID, "User", "user@example.com")
+	if err != nil {
+		log.Printf("Warning: Failed to get/create RSS feed: %v", err)
+	} else {
+		audioURL := fmt.Sprintf("https://%s.s3.amazonaws.com/%s/%s",
+			ac.storage.GetBucketName(),
+			userID,
+			job.AudioFileName)
+
+		// Use filename as title and provide default values for missing fields
+		title := job.AudioFileName
+		author := "Article2Audio User"
+		description := fmt.Sprintf("Audio version of article from: %s", job.URL)
+
+		ac.rssService.AddItem(feed, title, author, description, audioURL, job.Duration)
+
+		err = ac.rssService.SaveFeed(userID, feed)
+		if err != nil {
+			log.Printf("Warning: Failed to save RSS feed: %v", err)
+		}
+	}
+
 	ac.updateJobStatus(job, StatusCompleted)
 }
 

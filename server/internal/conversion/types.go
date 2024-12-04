@@ -10,6 +10,7 @@ type ConversionJob struct {
 	AudioFileName string
 	Error         string
 	UserID        string
+	Duration      float64
 }
 
 const (
