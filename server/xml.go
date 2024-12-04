@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 )
 
 type RSS struct {
@@ -17,13 +18,13 @@ type Channel struct {
 
 type Item struct {
 	Title       string    `xml:"title"`
-	Author      string    `xml:"itunes:author"`
+	Author      string    `xml:"author"`
 	Description string    `xml:"description"`
 	PubDate     string    `xml:"pubDate"`
 	Enclosure   Enclosure `xml:"enclosure"`
 	GUID        string    `xml:"guid"`
-	Duration    string    `xml:"itunes:duration"`
-	Explicit    string    `xml:"itunes:explicit"`
+	Duration    string    `xml:"duration"`
+	Explicit    string    `xml:"explicit"`
 }
 
 type Enclosure struct {
@@ -44,11 +45,19 @@ func main() {
 	// Read the XML file contents
 	byteValue, _ := ioutil.ReadAll(xmlFile)
 
-	fmt.Println("Before unmarshaling: ", string(byteValue))
+	fmt.Println("Before processing XML: ")
+	fmt.Println(string(byteValue))
 
-	// Unmarshal the XML data into the RSS struct
+	// Strip namespace prefixes (e.g., itunes:) using regex
+	re := regexp.MustCompile(`(?s)<(/?)itunes:([^>]*)>`)
+	cleanedXML := re.ReplaceAll(byteValue, []byte("<$1$2>"))
+
+	fmt.Println("After removing namespaces: ")
+	fmt.Println(string(cleanedXML))
+
+	// Unmarshal the cleaned XML data into the RSS struct
 	var rss RSS
-	err = xml.Unmarshal(byteValue, &rss)
+	err = xml.Unmarshal(cleanedXML, &rss)
 	if err != nil {
 		fmt.Println("Error unmarshaling XML:", err)
 		return
@@ -61,7 +70,6 @@ func main() {
 	// Print the contents of each <item>
 	for i, item := range rss.Channel.Items {
 		fmt.Printf("Item %d:\n", i+1)
-		fmt.Printf("  Item: %v\n", item)
 		fmt.Printf("  Title: %s\n", item.Title)
 		fmt.Printf("  Author: %s\n", item.Author)
 		fmt.Printf("  Description: %s\n", item.Description)
