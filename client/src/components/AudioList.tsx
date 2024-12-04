@@ -42,13 +42,17 @@ export function AudioList() {
                 <p className={styles.empty}>No audio files yet. Try converting an article!</p>
             ) : (
                 <div className={styles.grid}>
-                    {Array.isArray(audioFiles) && audioFiles.map((file) => (
+                    {audioFiles.map((file) => (
                         <div key={file.key} className={styles.card}>
                             <h3>{file.key}</h3>
                             <audio controls src={file.url} className={styles.audio} />
                             <time className={styles.date}>
                                 {new Date(file.createdAt).toLocaleDateString()}
                             </time>
+                            {/* Download button */}
+                            <a href={file.url} download className={styles.downloadButton}>
+                                Download
+                            </a>
                         </div>
                     ))}
                 </div>

@@ -63,7 +63,7 @@ func (ac *AudioConverter) GetStatus(jobID string) (*ConversionJob, error) {
 	return job, nil
 }
 
-func (ac *AudioConverter) ListAudioFiles(userID string) ([]string, error) {
+func (ac *AudioConverter) ListAudioFiles(userID string) ([]storage.AudioFile, error) {
 	return ac.storage.ListAudioFiles(userID)
 }
 

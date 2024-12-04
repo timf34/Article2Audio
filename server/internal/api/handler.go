@@ -69,6 +69,8 @@ func (h *Handler) ListAudioFiles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	baseURL := "https://article2audio.s3.eu-west-1.amazonaws.com"
+
 	response := struct {
 		Files []struct {
 			Key       string `json:"key"`
@@ -84,16 +86,14 @@ func (h *Handler) ListAudioFiles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, file := range files {
-		// Example: S3 base URL and creation time (replace with actual logic for `CreatedAt`)
-		baseURL := "https://your-s3-bucket.s3.amazonaws.com" // Update with your actual S3 bucket URL
 		response.Files = append(response.Files, struct {
 			Key       string `json:"key"`
 			URL       string `json:"url"`
 			CreatedAt string `json:"createdAt"`
 		}{
-			Key:       file,
-			URL:       fmt.Sprintf("%s/%s", baseURL, file),
-			CreatedAt: "2024-12-04T12:00:00Z", // Replace with actual creation time from S3 if available
+			Key:       file.Key,
+			URL:       fmt.Sprintf("%s/%s", baseURL, file.Key),
+			CreatedAt: file.CreatedAt,
 		})
 	}
 
