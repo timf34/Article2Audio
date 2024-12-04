@@ -1,85 +1,42 @@
 package main
 
 import (
-	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"github.com/mmcdole/gofeed"
 	"os"
-	"regexp"
 )
 
-type RSS struct {
-	Channel Channel `xml:"channel"`
-}
-
-type Channel struct {
-	Items []Item `xml:"item"`
-}
-
-type Item struct {
-	Title       string    `xml:"title"`
-	Author      string    `xml:"author"`
-	Description string    `xml:"description"`
-	PubDate     string    `xml:"pubDate"`
-	Enclosure   Enclosure `xml:"enclosure"`
-	GUID        string    `xml:"guid"`
-	Duration    string    `xml:"duration"`
-	Explicit    string    `xml:"explicit"`
-}
-
-type Enclosure struct {
-	URL    string `xml:"url,attr"`
-	Length string `xml:"length,attr"`
-	Type   string `xml:"type,attr"`
-}
-
 func main() {
-	// Open the XML file
-	xmlFile, err := os.Open("test.xml")
+	// Open the RSS file
+	file, err := os.Open("test.xml")
 	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return
+		panic(fmt.Sprintf("Failed to open file: %v", err))
 	}
-	defer xmlFile.Close()
+	defer file.Close()
 
-	// Read the XML file contents
-	byteValue, _ := ioutil.ReadAll(xmlFile)
-
-	fmt.Println("Before processing XML: ")
-	fmt.Println(string(byteValue))
-
-	// Strip namespace prefixes (e.g., itunes:) using regex
-	re := regexp.MustCompile(`(?s)<(/?)itunes:([^>]*)>`)
-	cleanedXML := re.ReplaceAll(byteValue, []byte("<$1$2>"))
-
-	fmt.Println("After removing namespaces: ")
-	fmt.Println(string(cleanedXML))
-
-	// Unmarshal the cleaned XML data into the RSS struct
-	var rss RSS
-	err = xml.Unmarshal(cleanedXML, &rss)
+	// Parse the RSS feed
+	parser := gofeed.NewParser()
+	feed, err := parser.Parse(file)
 	if err != nil {
-		fmt.Println("Error unmarshaling XML:", err)
-		return
+		panic(fmt.Sprintf("Failed to parse feed: %v", err))
 	}
 
-	// Print everything unmarshalled
-	fmt.Printf("After unmarshaling \n")
-	fmt.Printf("RSS: %v\n", rss)
+	// Print the feed's general information
+	fmt.Printf("Feed Title: %s\n", feed.Title)
+	fmt.Printf("Feed Description: %s\n", feed.Description)
 
-	// Print the contents of each <item>
-	for i, item := range rss.Channel.Items {
-		fmt.Printf("Item %d:\n", i+1)
+	// Print details for each item
+	for i, item := range feed.Items {
+		fmt.Printf("\nItem %d:\n", i+1)
 		fmt.Printf("  Title: %s\n", item.Title)
-		fmt.Printf("  Author: %s\n", item.Author)
 		fmt.Printf("  Description: %s\n", item.Description)
-		fmt.Printf("  PubDate: %s\n", item.PubDate)
-		fmt.Printf("  Enclosure:\n")
-		fmt.Printf("    URL: %s\n", item.Enclosure.URL)
-		fmt.Printf("    Length: %s\n", item.Enclosure.Length)
-		fmt.Printf("    Type: %s\n", item.Enclosure.Type)
-		fmt.Printf("  GUID: %s\n", item.GUID)
-		fmt.Printf("  Duration: %s\n", item.Duration)
-		fmt.Printf("  Explicit: %s\n\n", item.Explicit)
+		fmt.Printf("  Published: %s\n", item.Published)
+
+		// Access iTunes-specific fields
+		if item.ITunesExt != nil {
+			fmt.Printf("  iTunes Author: %s\n", item.ITunesExt.Author)
+			fmt.Printf("  iTunes Duration: %s\n", item.ITunesExt.Duration)
+			fmt.Printf("  iTunes Explicit: %s\n", item.ITunesExt.Explicit)
+		}
 	}
 }
