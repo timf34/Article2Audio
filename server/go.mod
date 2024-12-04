@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go v1.55.5
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
+	github.com/joho/godotenv v1.5.1
 	github.com/rs/cors v1.11.1
 )
 
@@ -19,7 +20,6 @@ require (
 	github.com/go-resty/resty/v2 v2.0.0 // indirect
 	github.com/jaytaylor/html2text v0.0.0-20180606194806-57d518f124b0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/mattn/go-runewidth v0.0.3 // indirect
 	github.com/olekukonko/tablewriter v0.0.0-20180506121414-d4647c9c7a84 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
