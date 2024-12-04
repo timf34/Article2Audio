@@ -182,6 +182,43 @@ func (s *RSSService) GetOrCreateFeed(userID, name, email string) (*RSS, error) {
 			return nil, fmt.Errorf("error unmarshaling feed: %v", err)
 		}
 
+		// Ensure iTunes namespaces are preserved
+		feed.Version = "2.0"
+		feed.ITunes = "http://www.itunes.com/dtds/podcast-1.0.dtd"
+		feed.Content = "http://purl.org/rss/1.0/modules/content/"
+		feed.Atom = "http://www.w3.org/2005/Atom"
+
+		// Ensure channel metadata is preserved
+		if feed.Channel.ITunesExplicit == "" {
+			feed.Channel.ITunesExplicit = "false"
+		}
+		if feed.Channel.ITunesAuthor == "" {
+			feed.Channel.ITunesAuthor = name
+		}
+		if feed.Channel.ITunesImage.Href == "" {
+			feed.Channel.ITunesImage.Href = "https://article2audio.com/podcast_cover.jpg"
+		}
+		if feed.Channel.ITunesCategory.Text == "" {
+			feed.Channel.ITunesCategory.Text = "Technology"
+		}
+		if feed.Channel.ITunesOwner.Name == "" {
+			feed.Channel.ITunesOwner.Name = name
+		}
+		if feed.Channel.ITunesOwner.Email == "" {
+			feed.Channel.ITunesOwner.Email = email
+		}
+
+		// Preserve metadata for existing items
+		for i := range feed.Channel.Items {
+			if feed.Channel.Items[i].ITunesExplicit == "" {
+				feed.Channel.Items[i].ITunesExplicit = "false"
+			}
+			// Only set author if it's empty
+			if feed.Channel.Items[i].ITunesAuthor == "" {
+				feed.Channel.Items[i].ITunesAuthor = "Article2Audio User"
+			}
+		}
+
 		return &feed, nil
 	}
 
