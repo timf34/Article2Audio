@@ -14,21 +14,24 @@ type RSSFeed struct {
 	XMLName xml.Name `xml:"rss"`
 	Version string   `xml:"version,attr"`
 	Itunes  string   `xml:"xmlns:itunes,attr"`
+	Content string   `xml:"xmlns:content,attr"`
 	Atom    string   `xml:"xmlns:atom,attr"`
 	Channel Channel  `xml:"channel"`
 }
 
 type Channel struct {
-	Title          string   `xml:"title"`
-	Link           string   `xml:"link"`
-	Language       string   `xml:"language"`
-	Copyright      string   `xml:"copyright"`
-	ItunesAuthor   string   `xml:"itunes:author"`
-	Description    string   `xml:"description"`
-	ItunesImage    Image    `xml:"itunes:image"`
-	ItunesCategory Category `xml:"itunes:category"`
-	ItunesExplicit string   `xml:"itunes:explicit"`
-	Items          []Item   `xml:"item"`
+	Title          string      `xml:"title"`
+	Link           string      `xml:"link"`
+	Language       string      `xml:"language"`
+	Copyright      string      `xml:"copyright"`
+	ItunesAuthor   string      `xml:"itunes:author"`
+	Description    string      `xml:"description"`
+	ItunesImage    Image       `xml:"itunes:image"`
+	ItunesCategory Category    `xml:"itunes:category"`
+	ItunesExplicit string      `xml:"itunes:explicit"`
+	AtomLink       AtomLink    `xml:"atom:link"`
+	ItunesOwner    ItunesOwner `xml:"itunes:owner"`
+	Items          []Item      `xml:"item"`
 }
 
 type Image struct {
@@ -37,6 +40,17 @@ type Image struct {
 
 type Category struct {
 	Text string `xml:"text,attr"`
+}
+
+type AtomLink struct {
+	Href string `xml:"href,attr"`
+	Rel  string `xml:"rel,attr"`
+	Type string `xml:"type,attr"`
+}
+
+type ItunesOwner struct {
+	Name  string `xml:"itunes:name"`
+	Email string `xml:"itunes:email"`
 }
 
 type Item struct {
@@ -75,6 +89,7 @@ func main() {
 	rssFeed := RSSFeed{
 		Version: "2.0",
 		Itunes:  "http://www.itunes.com/dtds/podcast-1.0.dtd",
+		Content: "http://purl.org/rss/1.0/modules/content/",
 		Atom:    "http://www.w3.org/2005/Atom",
 		Channel: Channel{
 			Title:          feed.Title,
@@ -86,7 +101,16 @@ func main() {
 			ItunesImage:    Image{Href: feed.Image.URL},
 			ItunesCategory: Category{Text: strings.Join(feed.Categories, ", ")},
 			ItunesExplicit: feed.ITunesExt.Explicit,
-			Items:          convertItems(feed.Items),
+			AtomLink: AtomLink{
+				Href: "https://article2audio.com/rss.xml",
+				Rel:  "self",
+				Type: "application/rss+xml",
+			},
+			ItunesOwner: ItunesOwner{
+				Name:  "Tim Farrelly",
+				Email: "timf34@gmail.com",
+			},
+			Items: convertItems(feed.Items),
 		},
 	}
 
@@ -111,6 +135,9 @@ func main() {
 		panic(fmt.Sprintf("Failed to create output file: %v", err))
 	}
 	defer outputFile.Close()
+
+	// Add XML header
+	outputFile.WriteString("<?xml version='1.0' encoding='UTF-8'?>\n")
 
 	encoder := xml.NewEncoder(outputFile)
 	encoder.Indent("", "  ")
