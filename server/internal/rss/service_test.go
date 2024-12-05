@@ -1,9 +1,7 @@
-// Run with: go test ./internal/rss -v
-
 package rss
 
 import (
-	"encoding/xml"
+	"github.com/mmcdole/gofeed"
 	"os"
 	"testing"
 )
@@ -13,108 +11,131 @@ type LocalStorage struct {
 	basePath string
 }
 
-func NewLocalStorage(basePath string) *LocalStorage {
-	return &LocalStorage{basePath: basePath}
+func (s *LocalStorage) DownloadFile(_ string, filename string) ([]byte, error) {
+	return os.ReadFile(filename)
 }
 
-func (s *LocalStorage) UploadFile(userID string, filename string, data []byte) error {
-	return os.WriteFile(s.basePath+"/"+filename, data, 0644)
+func (s *LocalStorage) UploadFile(_ string, filename string, data []byte) error {
+	return os.WriteFile(filename, data, 0644)
 }
 
-func (s *LocalStorage) DownloadFile(userID string, filename string) ([]byte, error) {
-	return os.ReadFile(s.basePath + "/" + filename)
-}
-
-func (s *LocalStorage) FileExists(userID string, filename string) (bool, error) {
-	_, err := os.Stat(s.basePath + "/" + filename)
+func (s *LocalStorage) FileExists(_ string, filename string) (bool, error) {
+	_, err := os.Stat(filename)
+	if err == nil {
+		return true, nil
+	}
 	if os.IsNotExist(err) {
 		return false, nil
 	}
-	return err == nil, err
+	return false, err
 }
 
 func TestRSSService(t *testing.T) {
-	// Initialize local storage pointing to the test directory
-	storage := NewLocalStorage(".")
+	// Create service with local storage
+	storage := &LocalStorage{basePath: "."}
 	service := New(storage)
 
-	// Create initial test.xml if it doesn't exist
-	exists, _ := storage.FileExists("", "test.xml")
-	if !exists {
-		feed, err := service.CreateInitialFeed("test-user", "Test User", "test@example.com")
+	t.Run("Read and Modify Feed", func(t *testing.T) {
+		// Load and parse test.xml
+		data, err := storage.DownloadFile("", "test.xml")
 		if err != nil {
-			t.Fatalf("Failed to create initial feed: %v", err)
+			t.Fatalf("Failed to read test.xml: %v", err)
 		}
-		if err := service.SaveFeed("", feed); err != nil {
-			t.Fatalf("Failed to save initial feed: %v", err)
-		}
-	}
 
-	// Test adding a new item
-	t.Run("Add new item and preserve existing items", func(t *testing.T) {
-		// Load existing feed
-		feed, err := service.GetOrCreateFeed("", "Test User", "test@example.com")
+		t.Logf("Original RSS Feed:\n%s", string(data))
+
+		// Parse using gofeed
+		parser := gofeed.NewParser()
+		gofeedFeed, err := parser.ParseString(string(data))
 		if err != nil {
-			t.Fatalf("Failed to get feed: %v", err)
+			t.Fatalf("Failed to parse feed: %v", err)
+		}
+
+		// Convert to our RSS struct
+		feed := &RSS{
+			Version: "2.0",
+			Itunes:  "http://www.itunes.com/dtds/podcast-1.0.dtd",
+			Content: "http://purl.org/rss/1.0/modules/content/",
+			Atom:    "http://www.w3.org/2005/Atom",
+			Channel: Channel{
+				Title:          gofeedFeed.Title,
+				Link:           gofeedFeed.Link,
+				Language:       gofeedFeed.Language,
+				Copyright:      gofeedFeed.Copyright,
+				ItunesAuthor:   gofeedFeed.ITunesExt.Author,
+				Description:    gofeedFeed.Description,
+				ItunesImage:    Image{Href: gofeedFeed.Image.URL},
+				ItunesCategory: Category{Text: gofeedFeed.Categories[0]},
+				ItunesExplicit: gofeedFeed.ITunesExt.Explicit,
+				AtomLink: AtomLink{
+					Href: "https://article2audio.com/rss.xml",
+					Rel:  "self",
+					Type: "application/rss+xml",
+				},
+				Items: convertItems(gofeedFeed.Items),
+			},
 		}
 
 		// Print existing items
-		t.Log("Existing items before adding new item:")
+		t.Log("\nExisting items in feed:")
 		for i, item := range feed.Channel.Items {
-			t.Logf("Item %d: Title=%s, Duration=%s, Author=%s",
-				i, item.Title, item.ITunesDuration, item.ITunesAuthor)
+			t.Logf("Item %d:\n  Title: %s\n  Duration: %s\n  Author: %s",
+				i, item.Title, item.ItunesDuration, item.ItunesAuthor)
 		}
+		originalItemCount := len(feed.Channel.Items)
 
-		// Add new item
+		// Test adding a new item
 		service.AddItem(feed,
-			"test-audio.mp3",
+			"Test Article",
 			"Test Author",
-			"Test Description",
+			"This is a test article description",
 			"https://example.com/test-audio.mp3",
-			80.5, // 1 minute 20.5 seconds
-		)
+			300.0) // 5 minutes duration
 
-		// Save the updated feed
+		// Verify new item was added
+		if len(feed.Channel.Items) != originalItemCount+1 {
+			t.Errorf("Expected %d items, got %d", originalItemCount+1, len(feed.Channel.Items))
+		}
+
+		// Verify new item is first in the list
+		newItem := feed.Channel.Items[0]
+		if newItem.Title != "Test Article" {
+			t.Errorf("Expected new item title 'Test Article', got '%s'", newItem.Title)
+		}
+		if newItem.ItunesAuthor != "Test Author" {
+			t.Errorf("Expected new item author 'Test Author', got '%s'", newItem.ItunesAuthor)
+		}
+		if newItem.ItunesDuration != "00:05:00" {
+			t.Errorf("Expected duration '00:05:00', got '%s'", newItem.ItunesDuration)
+		}
+
+		// Test saving the modified feed
 		if err := service.SaveFeed("", feed); err != nil {
-			t.Fatalf("Failed to save updated feed: %v", err)
+			t.Fatalf("Failed to save feed: %v", err)
 		}
 
-		// Reload the feed to verify changes
-		updatedFeed, err := service.GetOrCreateFeed("", "Test User", "test@example.com")
+		// Verify saved file exists and can be parsed
+		savedData, err := storage.DownloadFile("", "rss.xml")
 		if err != nil {
-			t.Fatalf("Failed to reload feed: %v", err)
+			t.Fatalf("Failed to read saved file: %v", err)
 		}
 
-		// Print updated items
-		t.Log("\nItems after adding new item:")
-		for i, item := range updatedFeed.Channel.Items {
-			t.Logf("Item %d: Title=%s, Duration=%s, Author=%s",
-				i, item.Title, item.ITunesDuration, item.ITunesAuthor)
+		// Parse saved file with gofeed to verify it's valid
+		savedGofeedFeed, err := parser.ParseString(string(savedData))
+		if err != nil {
+			t.Fatalf("Failed to parse saved feed: %v", err)
 		}
 
-		// Verify the new item was added and old items preserved
-		if len(updatedFeed.Channel.Items) == 0 {
-			t.Fatal("No items found in updated feed")
+		// Verify saved feed has correct number of items
+		if len(savedGofeedFeed.Items) != len(feed.Channel.Items) {
+			t.Errorf("Saved feed has %d items, expected %d", len(savedGofeedFeed.Items), len(feed.Channel.Items))
 		}
 
-		firstItem := updatedFeed.Channel.Items[0]
-		if firstItem.Title != "test-audio.mp3" {
-			t.Errorf("Expected first item title to be 'test-audio.mp3', got '%s'", firstItem.Title)
-		}
-		if firstItem.ITunesDuration != "00:01:20" {
-			t.Errorf("Expected duration '00:01:20', got '%s'", firstItem.ITunesDuration)
-		}
-		if firstItem.ITunesAuthor != "Test Author" {
-			t.Errorf("Expected author 'Test Author', got '%s'", firstItem.ITunesAuthor)
+		// Print the items from saved feed
+		t.Log("\nSaved feed items:")
+		for i, item := range savedGofeedFeed.Items {
+			t.Logf("Item %d:\n  Title: %s\n  Duration: %s\n  Author: %s",
+				i, item.Title, item.ITunesExt.Duration, item.ITunesExt.Author)
 		}
 	})
-}
-
-// Helper function to pretty print XML (for debugging)
-func prettyPrintXML(data interface{}) string {
-	output, err := xml.MarshalIndent(data, "", "  ")
-	if err != nil {
-		return err.Error()
-	}
-	return string(output)
 }

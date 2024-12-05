@@ -3,7 +3,9 @@ package rss
 import (
 	"encoding/xml"
 	"fmt"
+	"github.com/mmcdole/gofeed"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -17,28 +19,29 @@ type StorageInterface interface {
 	FileExists(userID string, filename string) (bool, error)
 }
 
-type Channel struct {
-	XMLName     xml.Name `xml:"channel"`
-	Title       string   `xml:"title"`
-	Link        string   `xml:"link"`
-	Language    string   `xml:"language"`
-	Copyright   string   `xml:"copyright"`
-	Description string   `xml:"description"`
-	Items       []Item   `xml:"item"`
-
-	// iTunes specific fields - note the namespace prefix
-	ITunesAuthor   string   `xml:"itunes:author,omitempty"`
-	ITunesImage    Image    `xml:"itunes:image,omitempty"`
-	ITunesCategory Category `xml:"itunes:category,omitempty"`
-	ITunesExplicit string   `xml:"itunes:explicit,omitempty"`
-	ITunesOwner    Owner    `xml:"itunes:owner,omitempty"`
-
-	// Atom Link
-	AtomLink AtomLink `xml:"atom:link"`
+// RSSFeed struct for re-encoding
+type RSS struct {
+	XMLName xml.Name `xml:"rss"`
+	Version string   `xml:"version,attr"`
+	Itunes  string   `xml:"xmlns:itunes,attr"`
+	Content string   `xml:"xmlns:content,attr"`
+	Atom    string   `xml:"xmlns:atom,attr"`
+	Channel Channel  `xml:"channel"`
 }
 
-type AtomLink struct {
-	Href string `xml:"href,attr"`
+type Channel struct {
+	Title          string      `xml:"title"`
+	Link           string      `xml:"link"`
+	Language       string      `xml:"language"`
+	Copyright      string      `xml:"copyright"`
+	ItunesAuthor   string      `xml:"itunes:author"`
+	Description    string      `xml:"description"`
+	ItunesImage    Image       `xml:"itunes:image"`
+	ItunesCategory Category    `xml:"itunes:category"`
+	ItunesExplicit string      `xml:"itunes:explicit"`
+	AtomLink       AtomLink    `xml:"atom:link"`
+	ItunesOwner    ItunesOwner `xml:"itunes:owner"`
+	Items          []Item      `xml:"item"`
 }
 
 type Image struct {
@@ -49,7 +52,13 @@ type Category struct {
 	Text string `xml:"text,attr"`
 }
 
-type Owner struct {
+type AtomLink struct {
+	Href string `xml:"href,attr"`
+	Rel  string `xml:"rel,attr"`
+	Type string `xml:"type,attr"`
+}
+
+type ItunesOwner struct {
 	Name  string `xml:"itunes:name"`
 	Email string `xml:"itunes:email"`
 }
@@ -59,31 +68,16 @@ type Item struct {
 	Description    string    `xml:"description"`
 	PubDate        string    `xml:"pubDate"`
 	Enclosure      Enclosure `xml:"enclosure"`
-	GUID           GUID      `xml:"guid"`
-	ITunesDuration string    `xml:"itunes:duration,omitempty"`
-	ITunesExplicit string    `xml:"itunes:explicit,omitempty"`
-	ITunesAuthor   string    `xml:"itunes:author,omitempty"`
-}
-
-type RSS struct {
-	XMLName xml.Name `xml:"rss"`
-	Version string   `xml:"version,attr"`
-	// Add namespace definitions
-	ITunes  string  `xml:"xmlns:itunes,attr"`
-	Content string  `xml:"xmlns:content,attr"`
-	Atom    string  `xml:"xmlns:atom,attr"`
-	Channel Channel `xml:"channel"`
+	GUID           string    `xml:"guid"`
+	ItunesAuthor   string    `xml:"itunes:author"`
+	ItunesDuration string    `xml:"itunes:duration"`
+	ItunesExplicit string    `xml:"itunes:explicit"`
 }
 
 type Enclosure struct {
 	URL    string `xml:"url,attr"`
 	Length string `xml:"length,attr"`
 	Type   string `xml:"type,attr"`
-}
-
-type GUID struct {
-	Value       string `xml:",chardata"`
-	IsPermaLink string `xml:"isPermaLink,attr"`
 }
 
 func New(storage StorageInterface) *RSSService {
@@ -95,7 +89,7 @@ func New(storage StorageInterface) *RSSService {
 func (s *RSSService) CreateInitialFeed(userID, name, email string) (*RSS, error) {
 	feed := &RSS{
 		Version: "2.0",
-		ITunes:  "http://www.itunes.com/dtds/podcast-1.0.dtd",
+		Itunes:  "http://www.itunes.com/dtds/podcast-1.0.dtd",
 		Content: "http://purl.org/rss/1.0/modules/content/",
 		Atom:    "http://www.w3.org/2005/Atom",
 		Channel: Channel{
@@ -103,17 +97,22 @@ func (s *RSSService) CreateInitialFeed(userID, name, email string) (*RSS, error)
 			Link:           "https://article2audio.com",
 			Language:       "en-us",
 			Copyright:      fmt.Sprintf("© %d %s", time.Now().Year(), name),
-			ITunesAuthor:   name,
+			ItunesAuthor:   name,
 			Description:    fmt.Sprintf("%s's articles", name),
-			ITunesExplicit: "false",
-			ITunesOwner: Owner{
+			ItunesExplicit: "false",
+			AtomLink: AtomLink{
+				Href: "https://article2audio.com/rss.xml",
+				Rel:  "self",
+				Type: "application/rss+xml",
+			},
+			ItunesOwner: ItunesOwner{
 				Name:  name,
 				Email: email,
 			},
-			ITunesImage: Image{
+			ItunesImage: Image{
 				Href: "https://article2audio.com/podcast_cover.jpg",
 			},
-			ITunesCategory: Category{
+			ItunesCategory: Category{
 				Text: "Technology",
 			},
 		},
@@ -128,20 +127,14 @@ func (s *RSSService) AddItem(feed *RSS, title, author, description, audioURL str
 	seconds := int(durationSeconds) % 60
 	duration := fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 
-	// Create unique GUID using timestamp and random string
-	guid := fmt.Sprintf("%s-%d", time.Now().Format("20060102150405"), time.Now().UnixNano()%10000)
-
 	newItem := Item{
 		Title:          title,
-		ITunesAuthor:   author,
+		ItunesAuthor:   author,
 		Description:    description,
-		PubDate:        time.Now().Format(time.RFC1123Z),
-		ITunesDuration: duration,
-		ITunesExplicit: "false",
-		GUID: GUID{
-			Value:       guid,
-			IsPermaLink: "false",
-		},
+		PubDate:        time.Now().Format(time.RFC1123),
+		ItunesDuration: duration,
+		ItunesExplicit: "false",
+		GUID:           fmt.Sprintf("https://article2audio.com/%s", time.Now().Format("20060102150405")),
 		Enclosure: Enclosure{
 			URL:    audioURL,
 			Type:   "audio/mpeg",
@@ -150,6 +143,32 @@ func (s *RSSService) AddItem(feed *RSS, title, author, description, audioURL str
 	}
 
 	feed.Channel.Items = append([]Item{newItem}, feed.Channel.Items...)
+}
+
+func convertItems(items []*gofeed.Item) []Item {
+	var converted []Item
+	for _, item := range items {
+		var enclosure Enclosure
+		if len(item.Enclosures) > 0 {
+			enclosure = Enclosure{
+				URL:    item.Enclosures[0].URL,
+				Length: item.Enclosures[0].Length,
+				Type:   item.Enclosures[0].Type,
+			}
+		}
+
+		converted = append(converted, Item{
+			Title:          item.Title,
+			Description:    item.Description,
+			PubDate:        item.Published,
+			Enclosure:      enclosure,
+			GUID:           item.GUID,
+			ItunesAuthor:   item.ITunesExt.Author,
+			ItunesDuration: item.ITunesExt.Duration,
+			ItunesExplicit: item.ITunesExt.Explicit,
+		})
+	}
+	return converted
 }
 
 func (s *RSSService) GetOrCreateFeed(userID, name, email string) (*RSS, error) {
@@ -163,26 +182,44 @@ func (s *RSSService) GetOrCreateFeed(userID, name, email string) (*RSS, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error downloading feed: %v", err)
 		}
-		fmt.Printf("Here is the raw data: %s\n", string(data))
 
-		var feed RSS
-		if err := xml.Unmarshal(data, &feed); err != nil {
-			return nil, fmt.Errorf("error unmarshaling feed: %v", err)
+		// Parse the RSS feed using gofeed
+		parser := gofeed.NewParser()
+		feed, err := parser.ParseString(string(data))
+		if err != nil {
+			return nil, fmt.Errorf("error parsing feed: %v", err)
 		}
 
-		// Ensure namespaces are set
-		feed.ITunes = "http://www.itunes.com/dtds/podcast-1.0.dtd"
-		feed.Content = "http://purl.org/rss/1.0/modules/content/"
-		feed.Atom = "http://www.w3.org/2005/Atom"
+		// Convert the parsed feed into our RSS struct
+		rssFeed := &RSS{
+			Version: "2.0",
+			Itunes:  "http://www.itunes.com/dtds/podcast-1.0.dtd",
+			Content: "http://purl.org/rss/1.0/modules/content/",
+			Atom:    "http://www.w3.org/2005/Atom",
+			Channel: Channel{
+				Title:          feed.Title,
+				Link:           feed.Link,
+				Language:       feed.Language,
+				Copyright:      feed.Copyright,
+				ItunesAuthor:   feed.ITunesExt.Author,
+				Description:    feed.Description,
+				ItunesImage:    Image{Href: feed.Image.URL},
+				ItunesCategory: Category{Text: strings.Join(feed.Categories, ", ")},
+				ItunesExplicit: feed.ITunesExt.Explicit,
+				AtomLink: AtomLink{
+					Href: "https://article2audio.com/rss.xml",
+					Rel:  "self",
+					Type: "application/rss+xml",
+				},
+				ItunesOwner: ItunesOwner{
+					Name:  name,
+					Email: email,
+				},
+				Items: convertItems(feed.Items),
+			},
+		}
 
-		// Update feed metadata
-		feed.Channel.Title = fmt.Sprintf("%s's Articles", name)
-		feed.Channel.Copyright = fmt.Sprintf("© %d %s", time.Now().Year(), name)
-		feed.Channel.ITunesAuthor = name
-		feed.Channel.ITunesOwner.Name = name
-		feed.Channel.ITunesOwner.Email = email
-
-		return &feed, nil
+		return rssFeed, nil
 	}
 
 	return s.CreateInitialFeed(userID, name, email)
@@ -192,28 +229,18 @@ func (s *RSSService) SaveFeed(userID string, feed *RSS) error {
 	// Validate items before saving
 	for i, item := range feed.Channel.Items {
 		log.Printf("Validating item %d: %s", i, item.Title)
-		if item.ITunesDuration == "" {
+		if item.ItunesDuration == "" {
 			log.Printf("Warning: Item %s has no duration", item.Title)
 		}
-		if item.ITunesAuthor == "" {
+		if item.ItunesAuthor == "" {
 			log.Printf("Warning: Item %s has no author", item.Title)
 		}
-	}
-
-	// Print feed items before marshaling
-	log.Printf("\nFeed items before saving:")
-	for i, item := range feed.Channel.Items {
-		log.Printf("Item %d before marshal:\n  Title: %s\n  Duration: %s\n  Author: %s\n",
-			i, item.Title, item.ITunesDuration, item.ITunesAuthor)
 	}
 
 	output, err := xml.MarshalIndent(feed, "", "  ")
 	if err != nil {
 		return fmt.Errorf("error marshaling RSS feed: %v", err)
 	}
-
-	// Print the final XML
-	log.Printf("\nFinal XML to be saved:\n%s", string(output))
 
 	xmlData := append([]byte(xml.Header), output...)
 	return s.storage.UploadFile(userID, "rss.xml", xmlData)
