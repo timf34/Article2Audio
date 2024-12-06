@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import styles from './AudioList.module.css'
+import { useApi } from '@/lib/api'
 
 type AudioFile = {
     key: string;
@@ -12,6 +13,7 @@ type AudioFile = {
 export function AudioList() {
     const [audioFiles, setAudioFiles] = useState<AudioFile[]>([])
     const [loading, setLoading] = useState(true)
+    const api = useApi()
 
     useEffect(() => {
         fetchAudioFiles()
@@ -19,17 +21,14 @@ export function AudioList() {
 
     const fetchAudioFiles = async () => {
         try {
-            const response = await fetch('http://localhost:8080/audio-files')
-            const data = await response.json()
-            console.log('Fetched audio files:', data)
-            setAudioFiles(data.files || []) // Extract "files" array from the response
+            const data = await api.listAudioFiles()
+            setAudioFiles(data.files || [])
         } catch (error) {
             console.error('Error fetching audio files:', error)
         } finally {
             setLoading(false)
         }
     }
-
 
     if (loading) {
         return <div className={styles.loading}>Loading audio files...</div>
@@ -49,7 +48,6 @@ export function AudioList() {
                             <time className={styles.date}>
                                 {new Date(file.createdAt).toLocaleDateString()}
                             </time>
-                            {/* Download button */}
                             <a href={file.url} download className={styles.downloadButton}>
                                 Download
                             </a>

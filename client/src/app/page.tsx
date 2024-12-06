@@ -3,27 +3,22 @@
 import { useState } from 'react'
 import styles from './page.module.css'
 import { AudioList } from '@/components/AudioList'
+import { AuthButton } from '@/components/AuthButton'
+import { useApi } from '@/lib/api'
 
 export default function Home() {
   const [url, setUrl] = useState('')
   const [processing, setProcessing] = useState(false)
   const [estimatedTime, setEstimatedTime] = useState<number | null>(null)
+  const api = useApi()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setProcessing(true)
 
     try {
-      const response = await fetch('http://localhost:8080/convert', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url }),
-      })
-
-      const data = await response.json()
-      setEstimatedTime(data.estimatedTime)
+      const response = await api.convertArticle(url)
+      setEstimatedTime(response.estimatedTime)
     } catch (error) {
       console.error('Error:', error)
     } finally {
@@ -33,7 +28,10 @@ export default function Home() {
 
   return (
       <div className={styles.container}>
-        <h1 className={styles.title}>Convert Articles to Audio</h1>
+        <div className="flex justify-between items-center w-full mb-8">
+          <h1 className={styles.title}>Convert Articles to Audio</h1>
+          <AuthButton />
+        </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.inputGroup}>
@@ -61,7 +59,7 @@ export default function Home() {
             </div>
         )}
 
-         <AudioList />
+        <AudioList />
       </div>
   )
 }

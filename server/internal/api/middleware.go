@@ -1,33 +1,49 @@
 package api
 
 import (
+	"article2audio/internal/auth"
 	"context"
+	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
-func UserAuthMiddleware(next http.Handler) http.Handler {
+func UserAuthMiddleware(authService *auth.Auth0Service) func(http.Handler) http.Handler {
 	enableAuth := os.Getenv("ENABLE_AUTH") == "true"
 	defaultUserID := os.Getenv("DEFAULT_USER_ID")
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var userID string
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var userID string
 
-		if enableAuth {
-			// Here, you'd add real authentication logic (e.g., checking a token or session)
-			// For now, simulate with a placeholder:
-			userID = r.Header.Get("X-User-ID")
-			if userID == "" {
-				http.Error(w, "Unauthorized: No User ID provided", http.StatusUnauthorized)
-				return
+			if enableAuth {
+				authHeader := r.Header.Get("Authorization")
+				if authHeader == "" {
+					http.Error(w, "No authorization header", http.StatusUnauthorized)
+					return
+				}
+
+				// Remove "Bearer " prefix
+				tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+				// Validate the token
+				sub, err := authService.ValidateToken(tokenString)
+				if err != nil {
+					log.Printf("Error validating token: %v", err)
+					http.Error(w, "Invalid token: "+err.Error(), http.StatusUnauthorized)
+					return
+				}
+
+				userID = sub
+			} else {
+				// Use default user ID when authentication is disabled
+				userID = defaultUserID
 			}
-		} else {
-			// Use default user ID when authentication is disabled
-			userID = defaultUserID
-		}
 
-		// Inject userID into the context
-		ctx := context.WithValue(r.Context(), "userID", userID)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+			// Inject userID into the context
+			ctx := context.WithValue(r.Context(), "userID", userID)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
 }

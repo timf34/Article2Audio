@@ -1,18 +1,21 @@
 import './globals.css'
+import {AuthProvider} from '@/providers/AuthProvider';
 
 export default function RootLayout({
-                                     children,
+                                       children,
                                    }: {
-  children: React.ReactNode
+    children: React.ReactNode
 }) {
-  return (
-      <html lang="en">
-      <body>
-      <nav className="navbar">
-        <div className="logo">article2audio</div>
-      </nav>
-      <main>{children}</main>
-      </body>
-      </html>
-  )
+    return (
+        <html lang="en">
+            <body>
+                <AuthProvider>
+                    <nav className="navbar">
+                        <div className="logo">article2audio</div>
+                    </nav>
+                    <main>{children}</main>
+                </AuthProvider>
+            </body>
+        </html>
+    )
 }
