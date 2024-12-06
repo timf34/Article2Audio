@@ -39,21 +39,21 @@
 }
 
 .button {
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
+  padding: 0.75rem 2rem; /* Adjusted padding for proportions */
+  font-size: 1.1rem; /* Slightly larger text */
   font-weight: bold;
-  color: white;
-  background: linear-gradient(90deg, #2563eb, #1e40af);
-  border: none;
-  border-radius: 12px;
+  color: black; /* Dark text */
+  background-color: white; /* White background */
+  border: 2px solid var(--border-color);
+  border-radius: 50px; /* Fully rounded corners */
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: background-color 0.2s ease, box-shadow 0.3s ease, transform 0.2s ease;
 }
 
 .button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+  /*Smooth transition into new background colour*/
+  background-color: rgb(252, 252, 252);
 }
 
 .button:disabled {
