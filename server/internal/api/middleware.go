@@ -1,44 +1,33 @@
 package api
 
 import (
-	"article2audio/internal/auth"
 	"context"
-	"github.com/gorilla/mux"
 	"net/http"
 	"os"
-	"strings"
 )
 
-func AuthMiddleware(authService *auth.Auth0Service) mux.MiddlewareFunc {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if os.Getenv("ENABLE_AUTH") != "true" {
-				// Use default user when auth is disabled
-				ctx := context.WithValue(r.Context(), "userID", os.Getenv("DEFAULT_USER_ID"))
-				next.ServeHTTP(w, r.WithContext(ctx))
+func UserAuthMiddleware(next http.Handler) http.Handler {
+	enableAuth := os.Getenv("ENABLE_AUTH") == "true"
+	defaultUserID := os.Getenv("DEFAULT_USER_ID")
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var userID string
+
+		if enableAuth {
+			// Here, you'd add real authentication logic (e.g., checking a token or session)
+			// For now, simulate with a placeholder:
+			userID = r.Header.Get("X-User-ID")
+			if userID == "" {
+				http.Error(w, "Unauthorized: No User ID provided", http.StatusUnauthorized)
 				return
 			}
+		} else {
+			// Use default user ID when authentication is disabled
+			userID = defaultUserID
+		}
 
-			// Extract the token from the Authorization header
-			authHeader := r.Header.Get("Authorization")
-			if authHeader == "" {
-				http.Error(w, "No authorization header", http.StatusUnauthorized)
-				return
-			}
-
-			// Remove 'Bearer ' prefix
-			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-
-			// Validate the token
-			userID, err := authService.ValidateToken(tokenString)
-			if err != nil {
-				http.Error(w, "Invalid token", http.StatusUnauthorized)
-				return
-			}
-
-			// Add userID to context
-			ctx := context.WithValue(r.Context(), "userID", userID)
-			next.ServeHTTP(w, r.WithContext(ctx))
-		})
-	}
+		// Inject userID into the context
+		ctx := context.WithValue(r.Context(), "userID", userID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
