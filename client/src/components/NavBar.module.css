@@ -1,0 +1,30 @@
+.navbar {
+    background: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+@media (max-width: 600px) {
+    .navbar {
+        padding: 0.5rem 0.5rem;
+    }
+
+    .logo {
+        font-size: 1rem;
+    }
+
+    /* Target the auth button when it's inside the navbar on mobile */
+    .navbar :global(.authButton) {
+        font-size: 0.1rem;
+        padding: 0.4rem 1rem;
+    }
+}

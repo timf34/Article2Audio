@@ -32,7 +32,6 @@ export default function Home() {
       <div className={styles.container}>
         <div className="flex justify-between items-center w-full mb-8">
           <h1 className={styles.title}>Convert Articles to Audio</h1>
-          {isAuthenticated && <AuthButton />}
         </div>
 
         {!isAuthenticated ? (

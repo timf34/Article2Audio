@@ -46,3 +46,19 @@
     color: #1e293b;
     font-weight: 600;
 }
+
+/* Mobile styles */
+@media (max-width: 600px) {
+    .authButton {
+        padding: 0.4rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .authButton::after {
+        padding: 1.5px; /* Slightly thinner gradient outline for mobile */
+    }
+
+    .authenticatedContainer {
+        gap: 0.5rem;
+    }
+}
