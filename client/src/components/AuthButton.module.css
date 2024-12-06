@@ -1,0 +1,48 @@
+.authButton {
+    padding: 0.75rem 2rem; /* Adjusted padding for proportions */
+    font-size: 1.1rem; /* Slightly larger text */
+    font-weight: bold;
+    color: black; /* Dark text */
+    background-color: white; /* White background */
+    border: none;
+    border-radius: 50px; /* Fully rounded corners */
+    cursor: pointer;
+    position: relative;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 30px rgba(59, 130, 246, 0.25); /* Glowing blue shadow */
+}
+
+.authButton:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.7), 0 0 40px rgba(59, 130, 246, 0.4); /* Intensified glow */
+}
+
+.authButton:focus {
+    outline: none;
+}
+
+.authButton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50px; /* Match button radius */
+    padding: 2px; /* Thickness of the gradient outline */
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.8), rgba(99, 102, 241, 0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+
+.authenticatedContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.userInfo {
+    font-size: 1rem;
+    color: #1e293b;
+    font-weight: 600;
+}
