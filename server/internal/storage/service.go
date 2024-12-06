@@ -73,8 +73,8 @@ func (s *S3Storage) ListAudioFiles(userID string) ([]AudioFile, error) {
 	}
 
 	if len(result.Contents) == 0 {
-		return nil, fmt.Errorf("no files found for user %s", userID)
-	}
+            return []AudioFile{}, nil  // Return empty list if no files found
+    }
 
 	var files []AudioFile
 	for _, obj := range result.Contents {

@@ -33,13 +33,7 @@
     font-size: 0.875rem;
 }
 
-.loading {
-    text-align: center;
-    padding: 2rem;
-    color: #666;
-}
-
-.empty {
+.empty, .loading {
     text-align: center;
     padding: 2rem;
     background: white;

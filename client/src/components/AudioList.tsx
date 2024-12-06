@@ -31,7 +31,12 @@ export function AudioList() {
     }
 
     if (loading) {
-        return <div className={styles.loading}>Loading audio files...</div>
+        return (
+            <div className={styles.container}>
+                <h2 className={styles.title}>Your Audio Files</h2>
+                <div className={styles.loading}>Loading audio files...</div>
+            </div>
+        )
     }
 
     return (
