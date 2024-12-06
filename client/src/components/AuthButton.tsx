@@ -9,10 +9,12 @@ export function AuthButton() {
     if (isAuthenticated) {
         return (
             <div className="flex items-center gap-4">
-                <span className="text-sm">{user?.email}</span>
+                <span className="text-sm text-gray-700 font-semibold">
+                    {user?.name || user?.email}
+                </span>
                 <button
                     onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-                    className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                    className="px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600"
                 >
                     Logout
                 </button>
@@ -23,7 +25,7 @@ export function AuthButton() {
     return (
         <button
             onClick={() => loginWithRedirect()}
-            className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
         >
             Login
         </button>

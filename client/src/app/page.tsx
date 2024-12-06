@@ -5,12 +5,14 @@ import styles from './page.module.css'
 import { AudioList } from '@/components/AudioList'
 import { AuthButton } from '@/components/AuthButton'
 import { useApi } from '@/lib/api'
+import { useAuth0 } from '@auth0/auth0-react'
 
 export default function Home() {
   const [url, setUrl] = useState('')
   const [processing, setProcessing] = useState(false)
   const [estimatedTime, setEstimatedTime] = useState<number | null>(null)
   const api = useApi()
+  const { isAuthenticated } = useAuth0()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,36 +32,45 @@ export default function Home() {
       <div className={styles.container}>
         <div className="flex justify-between items-center w-full mb-8">
           <h1 className={styles.title}>Convert Articles to Audio</h1>
-          <AuthButton />
+          {isAuthenticated && <AuthButton />}
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.inputGroup}>
-            <input
-                type="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="Paste article URL here..."
-                required
-                className={styles.input}
-            />
-            <button
-                type="submit"
-                className={styles.button}
-                disabled={processing}
-            >
-              {processing ? 'Processing...' : 'Go'}
-            </button>
-          </div>
-        </form>
-
-        {estimatedTime && (
-            <div className={styles.notice}>
-              Processing your article... Estimated time: {estimatedTime} seconds
+        {!isAuthenticated ? (
+            <div className="flex flex-col items-center">
+              <p className="text-lg mb-4">Please log in to start converting articles.</p>
+              <AuthButton />
             </div>
-        )}
+        ) : (
+            <>
+              <form onSubmit={handleSubmit} className={styles.form}>
+                <div className={styles.inputGroup}>
+                  <input
+                      type="url"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      placeholder="Paste article URL here..."
+                      required
+                      className={styles.input}
+                  />
+                  <button
+                      type="submit"
+                      className={styles.button}
+                      disabled={processing}
+                  >
+                    {processing ? 'Processing...' : 'Go'}
+                  </button>
+                </div>
+              </form>
 
-        <AudioList />
+              {estimatedTime && (
+                  <div className={styles.notice}>
+                    Processing your article... Estimated time: {estimatedTime} seconds
+                  </div>
+              )}
+
+              <AudioList />
+            </>
+        )}
       </div>
   )
 }
